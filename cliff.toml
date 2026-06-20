@@ -1,0 +1,47 @@
+# git-cliff configuration — Conventional Commits → CHANGELOG.md.
+# Commits are grouped by category (commit type) and sorted oldest-first within each release
+# (so the most recent change appears LAST). Release sections follow git-cliff's default order;
+# revisit after the first CI run if full ascending order across releases is desired.
+
+[changelog]
+header = "# Changelog\n\nAll notable changes to this project are documented here.\n"
+body = """
+{% if version %}\
+## [{{ version | trim_start_matches(pat="v") }}] - {{ timestamp | date(format="%Y-%m-%d") }}
+{% else %}\
+## [unreleased]
+{% endif %}\
+{% for group, commits in commits | group_by(attribute="group") %}
+### {{ group | striptags | trim | upper_first }}
+{% for commit in commits %}\
+- {% if commit.scope %}*({{ commit.scope }})* {% endif %}{{ commit.message | upper_first }}
+{% endfor %}\
+{% endfor %}\n
+"""
+trim = true
+footer = ""
+
+[git]
+conventional_commits = true
+filter_unconventional = true
+split_commits = false
+protect_breaking_commits = true
+filter_commits = false
+tag_pattern = "v[0-9]*"
+sort_commits = "oldest"
+topo_order = false
+
+commit_parsers = [
+  { message = "^feat", group = "<!-- 0 -->Features" },
+  { message = "^fix", group = "<!-- 1 -->Bug Fixes" },
+  { message = "^perf", group = "<!-- 2 -->Performance" },
+  { message = "^refactor", group = "<!-- 3 -->Refactor" },
+  { message = "^docs", group = "<!-- 4 -->Documentation" },
+  { message = "^test", group = "<!-- 5 -->Tests" },
+  { message = "^ci", group = "<!-- 6 -->CI/CD" },
+  { message = "^build", group = "<!-- 7 -->Build" },
+  { message = "^chore\\(release\\):", skip = true },
+  { message = "^chore", group = "<!-- 8 -->Chore" },
+  { body = ".*security", group = "<!-- 9 -->Security" },
+  { message = ".*", group = "<!-- 10 -->Other" },
+]
