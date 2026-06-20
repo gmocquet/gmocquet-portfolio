@@ -1,0 +1,235 @@
+# Ordered list of experiences — the order of items here is the display order (most recent first).
+# Each item needs a unique `id`. To reorder, move an item up or down.
+
+- id: hydrosat
+  company: Hydrosat
+  role: Staff Data Engineer — Data Platform & Large-Scale Processing (AWS, Kubernetes)
+  location: Luxembourg
+  start: "2025-08"
+  end: null
+  summary: >-
+    Hydrosat is a geospatial analytics company using thermal-infrared satellite imagery to measure crop
+    water stress and optimize agricultural productivity. I joined as Staff Data Engineer to build the
+    company's next-generation data platform from scratch on AWS/Kubernetes, processing high-volume
+    satellite imagery (Sentinel-2, Landsat, VIIRS) into customer-facing analyses.
+  highlights:
+    - group: Leadership & influence
+      items:
+        - Championed and built the platform's observability from scratch — central collector, OpenTelemetry, RED dashboards, alerting and distributed tracing; my recommendation led the org to adopt Grafana Cloud.
+        - Drove engineering practices org-wide — Dagster→Airflow for large-scale processing, GitOps (ArgoCD + GitHub Actions) with reusable workflows, inner-source, incremental SDLC, TDD and Clean Code/SOLID, and technical writing (docs, RFCs).
+        - Active in hiring — technical tests, interviews and home-test validation, reading weak signals to tell real candidate work from AI output.
+    - group: Platform & data infrastructure
+      items:
+        - Designed the target pipeline architecture — task-agnostic, scalable, cost-optimized (near-zero cost at idle, auto-scaling for peaks) — Airflow, containerized apps, KubernetesPodOperator and Karpenter; each app independently unit-testable and decoupled from Airflow.
+        - Defined the AWS networking plan (VPC, CIDR) and a geospatial batch system partitioning daily KPI computation across fields.
+    - group: AI-augmented engineering
+      items:
+        - Use agentic coding tools (Claude Code, Codex, Copilot) for PoCs, IaC/Terraform and review support; use MCP to automate context and ticket/PR creation, and share these practices across the org (AGENTS.md, skills, MCP).
+  stack: [AWS, Kubernetes, Airflow, KubernetesPodOperator, Karpenter, ArgoCD, GitHub Actions, OpenTelemetry, Grafana Cloud, Terraform, Python]
+  media: []
+
+- id: kpler
+  company: Kpler
+  role: Staff Data Engineer — Data & MLOps Platform (AWS, Kubernetes)
+  location: Paris, France
+  start: "2021-01"
+  end: "2025-07"
+  summary: >-
+    Kpler is a market-leading commodity intelligence platform giving traders, shipping and financial
+    players real-time visibility on global commodity flows across 40+ markets. I joined this fast-growing
+    scale-up at ~100 employees and grew into founding and managing its MLOps squad, building the platforms
+    and culture that industrialized AI/data use cases while Kpler scaled past 750 people and crossed
+    $100M ARR through 8 acquisitions.
+  highlights:
+    - group: Leadership & people management
+      items:
+        - Founded Kpler's MLOps squad — pitched and secured its creation with C-level, proving the value of faster, safer AI/data industrialization.
+        - Directly managed the squad — 1:1s, OKRs, performance reviews (9-box grid), career development, reporting to leadership.
+        - Owned end-to-end hiring — skill definition, tests, interviews and validation.
+    - group: Platform Engineering & DevEx
+      items:
+        - Built Kpler's MLOps platform from scratch — self-service training (GPU), deployment and inference for models in prod on AWS EKS with Terraform, GitOps and CI/CD; on Aurora PostgreSQL and Elasticsearch.
+        - Built a self-service Data platform on Airflow for analysts to industrialize BI/reporting, wiring data marts and KPIs to company stores, monitored and security-compliant.
+        - Drove DevEx and GitOps — reusable GitHub composite actions & workflows, Helm charts, and an in-house framework of shared modules (helpers, observability, alerting).
+    - group: Reliability & engineering culture
+      items:
+        - Joined the platform-wide on-call rotation — live debugging, fixes and service restoration; created and ran blameless post-mortems.
+        - Championed observability and "you build it, you run it", bridging R&D with 24/7 operational excellence so data scientists owned their use cases in production.
+  stack: [AWS, EKS, Kubernetes, Terraform, Airflow, GitHub Actions, Helm, Aurora PostgreSQL, Elasticsearch, MLOps, Python]
+  media:
+    - label: "ARTE — Planète finance: la course aux matières premières (2022)"
+      url: https://vimeo.com/930397924
+      kind: vimeo
+
+- id: quantmetry
+  company: Quantmetry — Part of Capgemini Invent
+  role: Data & Solution Architect — Cloud & AI Architecture Consultant (GCP, AWS)
+  location: Paris, France
+  start: "2018-04"
+  end: "2020-12"
+  summary: >-
+    Quantmetry is a pioneering independent French AI/data science consultancy (now part of Capgemini
+    Invent). As Data & Solution Architect I designed cloud and AI/ML target architectures and migration
+    roadmaps for major French enterprises. Google Cloud Certified — Professional Cloud Architect.
+  highlights:
+    - group: Leadership & influence
+      items:
+        - Managed a Big Data Engineer intern end to end and wrote 360° performance reviews for colleagues I mentored on missions.
+        - Authored several Quantmetry articles incl. its most-read of 2018 (a Kubernetes overview); wrote chapter 3 of its 5th white paper on MLOps (re)training automation, with a 20-min companion talk.
+    - group: Platform & data architecture (selected missions)
+      items:
+        - Architected layered "medallion" data lakes (raw → cleaned/quality/feature engineering → aggregated business rules) as a recurring blueprint across missions (Kering, EDF, La Sacem, OFI, CFM) on AWS (S3) and GCP (GCS).
+        - "Kering — initiated a group-wide AI Platform-as-a-Service on AWS on a unified S3 data lake serving the group's brands."
+        - "Gustave Roussy — secure multi-tenant AI platform on AWS: equal GPU compute for 20+ teams, clinical data in an HDS-compliant environment locked against exfiltration."
+        - "EDF Renouvelables — 100% serverless, near-real-time IoT platform on AWS for energy-production KPIs at global scale (20 countries, 8,000 wind turbines, 25,000 solar/PV units)."
+  stack: [AWS, GCP, S3, GCS, BigQuery, Terraform, Airflow (Composer), Kubernetes, GPU, IAM]
+  media:
+    - label: "White paper — AI in production: life cycle & model drift (MLOps), chapter 3 (2019)"
+      url: /assets/quantmetry-2019-white-paper-mlops.pdf
+      kind: pdf
+
+- id: ysance
+  company: Ysance
+  role: Senior Data Engineer — Cloud & DevOps (GCP, AWS)
+  location: Paris, France
+  start: "2016-09"
+  end: "2018-03"
+  summary: >-
+    Senior engineer on Ysance's Data Management Platform (the "Digital Data Factory"): a multi-tenant
+    marketing SaaS that reconciles each brand's online, offline and mobile customer data into a single,
+    real-time customer view, then activates audience segments across CRM, campaigns, eCommerce and
+    ad/retargeting systems. Main contributor within a 15+ developer Scrum team.
+  highlights:
+    - group: Technical leadership & mentoring
+      items:
+        - Paired with and mentored data scientists (incl. the Data Science Manager) and a data engineer — bringing their code up to production standards.
+        - Drove engineering standards and DevEx — PEP8 quality, CI workflows, configuration & secrets management, packaging/release, Docker, logging/observability; gave the team a Docker stack to run the full Airflow environment locally.
+    - group: Data engineering & scale
+      items:
+        - Industrialized data scientists' PoC code into reliable multi-tenant production with the engineering rigor it lacked.
+        - Built the daily batch pipeline on self-hosted Airflow (Hortonworks on GCP) with idempotent, self-recovering tasks; ELT across multi-cloud storage and SQL engines (GCS, S3, Redshift, BigQuery) — multi-cloud from 2016.
+        - Built the real-time stream-processing app (Scala + Spark Streaming) matching desktop and mobile tracker events to an in-house identity-resolution algorithm.
+  stack: [GCP, AWS, Airflow, BigQuery, Redshift, GCS, S3, Spark Streaming, Scala, Docker, Python]
+  media: []
+
+- id: my-mantic
+  company: My Mantic
+  role: Founder — career transition to Data Engineering
+  location: Paris, France
+  start: "2015-04"
+  end: "2016-08"
+  summary: >-
+    A transition period: I founded my own company while completing my CNAM Engineer's degree (2016)
+    and reskilling into Data Engineering — the pivot that shaped the next decade of my career.
+  highlights: []
+  stack: []
+  media: []
+
+- id: rue-du-commerce
+  company: Rue du Commerce
+  role: Engineering Manager
+  location: Saint-Ouen, France
+  start: "2012-07"
+  end: "2015-07"
+  summary: >-
+    Owned the Front Office of one of France's leading e-commerce platforms at the time (~€423M annual
+    GMV, incl. ~€135M marketplace across 750 merchants; 8M customers, 6M unique monthly visitors). Led
+    the team behind the product pages — the site's primary entry point and its most conversion-critical
+    surface.
+  highlights:
+    - group: People & technical leadership
+      items:
+        - Led and grew a team of 5 engineers — 1:1s, annual reviews, SMART goals, accountability; owned hiring (ran the full loop solo) and people-management cases with HR.
+        - Interfaced between dev and the wider org (IT, Marketing, Data, Design), aligning priorities into a single roadmap and reporting trade-offs to senior leadership.
+        - Introduced the organization's first Agile workflows (as JIRA admin, designed a long-cycle project flow with validation gates and a fast-track flow for bugs/blockers).
+    - group: Performance & scale
+      items:
+        - Led the full re-architecture of the product pages — microservices exposing data via REST APIs on a template-engine, SEO-optimized front-end.
+        - Engineered low-latency rendering under heavy traffic via multi-layer caching (Redis hot data + CDN at the edge) with immediate per-release invalidation of versioned JS/CSS assets.
+        - Shipped the redesign in Nov 2013; weeks later the surface I owned carried the company's all-time single-day sales record (~€5.2M group GMV at peak holiday load, announced by the CEO).
+  stack: [Microservices, REST APIs, Redis, CDN, SEO, Template engine, JIRA, Agile]
+  media: []
+
+- id: blogbang
+  company: BLOGBANG (Groupe Publicis)
+  role: Team Lead — Cloud, Data & DevOps Engineering (AWS)
+  location: Paris, France
+  start: "2009-03"
+  end: "2012-06"
+  summary: >-
+    Publicis-backed adtech startup running a long-tail social advertising network, reaching 21M unique
+    monthly visitors, fully on AWS from 2009 (early cloud adoption). Led and co-built key parts of the
+    platform within a 20+ engineer organization.
+  highlights:
+    - group: People & technical leadership
+      items:
+        - Managed a team of 4 engineers (annual reviews, growth), steered the product roadmap and owned the architecture decisions across the systems my team built.
+        - Introduced Redmine company-wide on my own initiative (self-hosted), from leadership pitch to triage and backlog.
+    - group: Engineering & scale
+      items:
+        - Co-built and operated the in-house ad server — engineered for security, high availability, low latency and scale under heavy traffic; delivered premium formats for major brands (LVMH, Sony, Renault, Ubisoft).
+        - Built real-time pipelines capturing thousands of ad-interaction data points per visitor with zero added latency, powering billing, KPIs, RTB/ad-exchange and dashboards.
+        - Built from scratch an FFmpeg-based multi-bitrate video encoding platform (5 renditions, 144p–1080p) on a Hadoop-inspired distributed architecture orchestrating AWS instances via the SDK (before Kubernetes).
+  stack: [AWS, EC2, FFmpeg, Distributed systems, RTB/Ad-exchange, Real-time data, REST APIs]
+  media: []
+
+- id: sqli
+  company: SQLI (formerly IconeWeb)
+  role: Fullstack Software Engineer
+  location: Saint-Denis, France
+  start: "2007-06"
+  end: "2009-02"
+  summary: >-
+    After SQLI Group acquired IconeWeb — then the market leader in digital solutions for enterprise
+    real estate — I carried on with the same premium clients (incl. VINCI and Crédit Mutuel groups) and
+    worked on software-architecture topics to improve site speed and performance, under a CMMI process.
+  highlights:
+    - group: Engineering
+      items:
+        - Front-end & back-end development of multilingual corporate websites for real-estate leaders, plus a collaborative DataRoom SaaS.
+        - Synced each site's listing catalog with the client's CRM via APIs — removing double data entry while letting sites add exclusive content.
+        - On my own initiative, structured how we built sites — introduced an ORM, a template engine and AJAX — laying engineering foundations the team lacked; spent a month in Casablanca training the offshore team.
+  stack: [PHP, JavaScript, AJAX, ORM, Template engine, REST APIs, CMMI]
+  media: []
+
+- id: iconeweb
+  company: IconeWeb Multimédia
+  role: Web Developer / DevOps
+  location: Paris, France
+  start: "2005-12"
+  end: "2007-05"
+  summary: >-
+    IconeWeb was a startup that became the market leader in digital solutions for the enterprise
+    real-estate sector — corporate websites and e-datarooms used by notaries and lawyers — acquired by
+    SQLI Group in 2007.
+  highlights:
+    - group: Engineering
+      items:
+        - Front-end & back-end development of real-estate web applications far beyond brochure sites — listing search engine, email alerts, saved-criteria client area, admin back-office and CRM integration via APIs.
+        - Built dynamic, interactive interfaces with JavaScript, CSS and AJAX — updating pages without full reloads for a smoother experience.
+  stack: [JavaScript, CSS, AJAX, REST APIs, CRM integration]
+  media: []
+
+- id: evolutis
+  company: Evolutis
+  role: Web Developer / DevOps — intern
+  location: Grenoble, France
+  start: "2005-01"
+  end: "2005-06"
+  summary: >-
+    Six-month engineering internship in web development and operations.
+  highlights: []
+  stack: []
+  media: []
+
+- id: ugitech
+  company: UGITECH
+  role: Web Developer / DevOps — intern
+  location: Ugine, France
+  start: "2004-01"
+  end: "2004-06"
+  summary: >-
+    Six-month engineering internship in web development and operations.
+  highlights: []
+  stack: []
+  media: []

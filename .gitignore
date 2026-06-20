@@ -25,3 +25,6 @@ Thumbs.db
 
 # Logs / scratch
 *.log
+
+# Local scratch / source assets (never committed)
+/tmp/
