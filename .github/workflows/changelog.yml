@@ -1,15 +1,18 @@
 name: changelog
 
 # On every new tag (vX.Y.Z), (re)generate CHANGELOG.md from Conventional Commits (grouped by
-# category, commits oldest-first so the most recent is last) and commit it back to main with
-# [skip ci] so it does not re-trigger the tag/deploy workflows.
+# category, commits oldest-first so the most recent is last) and open a PR with the update.
+# Using a PR (not a direct push) keeps `main` PR-only. The [skip ci] marker and the fact that a
+# docs(changelog) commit does not bump the version both prevent release loops.
 
 on:
   push:
     tags: ['v*']
+  workflow_dispatch: {}
 
 permissions:
   contents: write
+  pull-requests: write
 
 concurrency:
   group: changelog
@@ -31,14 +34,23 @@ jobs:
       - name: Generate CHANGELOG.md
         run: git cliff --output CHANGELOG.md
 
-      - name: Commit changelog (if changed)
+      - name: Open changelog PR (if changed)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          git config user.name  "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          if ! git diff --quiet -- CHANGELOG.md; then
-            git add CHANGELOG.md
-            git commit -m "docs(changelog): update CHANGELOG.md [skip ci]"
-            git push origin HEAD:main
-          else
-            echo "CHANGELOG.md unchanged — nothing to commit."
+          if git diff --quiet -- CHANGELOG.md; then
+            echo "CHANGELOG.md unchanged — nothing to do."
+            exit 0
           fi
+          ref="${GITHUB_REF_NAME:-manual}"
+          branch="chore/changelog-${ref}"
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -b "$branch"
+          git add CHANGELOG.md
+          git commit -m "docs(changelog): update for ${ref} [skip ci]"
+          git push -f origin "$branch"
+          gh pr create --base main --head "$branch" \
+            --title "docs(changelog): update for ${ref}" \
+            --body "Automated CHANGELOG.md regeneration for \`${ref}\`. Merge to publish." \
+            --label "type:docs" 2>/dev/null || echo "PR already exists for $branch."
