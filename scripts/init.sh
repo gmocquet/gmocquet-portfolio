@@ -27,4 +27,19 @@ hook=".git/hooks/pre-commit"
 printf '#!/usr/bin/env bash\nexec "$(git rev-parse --show-toplevel)/scripts/lint.sh" --staged\n' > "$hook"
 chmod +x "$hook"
 
+# Client-side PR-only guard: block direct pushes to main (server-side protection needs a public
+# repo or GitHub Pro). Bypass intentionally with `git push --no-verify` if ever required.
+note "installing pre-push git hook -> block direct pushes to main"
+pp=".git/hooks/pre-push"
+cat > "$pp" <<'HOOK'
+#!/usr/bin/env bash
+while read -r _ _ remote_ref _; do
+  if [[ "$remote_ref" == "refs/heads/main" ]]; then
+    echo "✗ Direct pushes to 'main' are blocked (PR-only). Open a PR instead (or use --no-verify)." >&2
+    exit 1
+  fi
+done
+HOOK
+chmod +x "$pp"
+
 note "init done."
