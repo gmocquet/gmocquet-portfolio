@@ -1,0 +1,17 @@
+# Backend pre-commit config — runs the project's pinned ruff (via uv) from within the ecosystem,
+# so there is no version drift with the declared dev dependencies. Invoked by `make lint`.
+repos:
+  - repo: local
+    hooks:
+      - id: ruff-check
+        name: ruff check (backend)
+        entry: bash -c 'cd "$(git rev-parse --show-toplevel)/backend" && uv run ruff check --fix .'
+        language: system
+        files: ^backend/
+        pass_filenames: false
+      - id: ruff-format
+        name: ruff format (backend)
+        entry: bash -c 'cd "$(git rev-parse --show-toplevel)/backend" && uv run ruff format .'
+        language: system
+        files: ^backend/
+        pass_filenames: false

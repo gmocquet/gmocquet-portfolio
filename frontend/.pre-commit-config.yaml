@@ -1,0 +1,12 @@
+# Frontend pre-commit config — runs the project's pinned Biome from within the ecosystem (so its
+# biome.json is the project root). Invoked by `make lint` / `scripts/lint.sh`.
+# (.astro files are type-checked by `astro check`, not Biome.)
+repos:
+  - repo: local
+    hooks:
+      - id: biome
+        name: biome (frontend)
+        entry: bash -c 'cd "$(git rev-parse --show-toplevel)/frontend" && npm run lint:fix'
+        language: system
+        files: ^frontend/
+        pass_filenames: false

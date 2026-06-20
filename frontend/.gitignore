@@ -1,0 +1,22 @@
+# Node / Astro ecosystem ignores (OS/editor ignores live in the repo-root .gitignore).
+
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+.astro/
+*.tsbuildinfo
+
+# Python tooling env (this ecosystem uses uv only to manage pre-commit)
+.venv/
+.ruff_cache/
+
+# Cloudflare / wrangler
+.wrangler/
+.dev.vars
+
+# Local env
+.env
+.env.*
+!.env.example
