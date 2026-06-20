@@ -1,0 +1,47 @@
+name: release-tag
+
+# On every push to main (i.e. after a PR merge), compute the next semantic version from the
+# Conventional Commits since the last tag and create/push a vX.Y.Z tag. No-op if nothing releasable.
+# Skipped for bot commits carrying [skip ci] (e.g. the changelog commit) to avoid CI loops.
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-tag
+  cancel-in-progress: false
+
+jobs:
+  tag:
+    if: ${{ !contains(github.event.head_commit.message, '[skip ci]') }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout (full history + tags)
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 0
+
+      - name: Install git-cliff (pinned)
+        run: pipx install git-cliff==2.13.1
+
+      - name: Compute next version
+        id: ver
+        run: |
+          next="$(git cliff --bumped-version 2>/dev/null || true)"
+          [[ "$next" == v* || -z "$next" ]] || next="v$next"
+          last="$(git describe --tags --abbrev=0 2>/dev/null || echo '')"
+          echo "next=$next" >> "$GITHUB_OUTPUT"
+          echo "last=$last" >> "$GITHUB_OUTPUT"
+          echo "Computed next=$next (last=$last)"
+
+      - name: Create and push tag
+        if: ${{ steps.ver.outputs.next != '' && steps.ver.outputs.next != steps.ver.outputs.last }}
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git tag -a "${{ steps.ver.outputs.next }}" -m "Release ${{ steps.ver.outputs.next }}"
+          git push origin "${{ steps.ver.outputs.next }}"
