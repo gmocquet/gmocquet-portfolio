@@ -1,0 +1,26 @@
+{
+  "name": "@gmocquet/ui",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Reusable React component library (as-if-external; consumed only via its public API).",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "peerDependencies": {
+    "react": "*",
+    "react-dom": "*"
+  },
+  "dependencies": {
+    "class-variance-authority": "0.7.1",
+    "clsx": "2.1.1",
+    "lucide-react": "1.21.0",
+    "motion": "12.40.0",
+    "tailwind-merge": "3.6.0"
+  },
+  "devDependencies": {
+    "@types/react": "19.2.17",
+    "@types/react-dom": "19.2.3",
+    "typescript": "6.0.3"
+  }
+}

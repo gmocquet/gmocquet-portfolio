@@ -1,0 +1,26 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+/* Scan the component library so its utility classes are generated. */
+@source "../../packages/ui/src";
+
+/* Design tokens — dark-first "luxe": near-black background, cream text, one restrained accent.
+   The real palette/typography is finalized in M3; these establish the token contract. */
+@theme {
+  --color-bg: #0b0b0c;
+  --color-fg: #ece7da;
+  --color-muted: #9a958a;
+  --color-accent: #c9a96a;
+
+  --font-display: "Fraunces", ui-serif, Georgia, serif;
+  --font-sans: "Geist", ui-sans-serif, system-ui, sans-serif;
+}
+
+html {
+  background-color: var(--color-bg);
+  color: var(--color-fg);
+}
+
+body {
+  font-family: var(--font-sans);
+}

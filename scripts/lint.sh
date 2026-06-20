@@ -10,18 +10,20 @@ STAGED=0
 
 note() { printf '\033[1m==>\033[0m %s\n' "$1"; }
 
+# pre-commit is a pinned dev dependency of each ecosystem (managed by uv), not a global tool —
+# so we invoke it via `uv run --project <dir>` to use the exact pinned version.
 run_ecosystem() {
   local dir="$1" cfg="$1/.pre-commit-config.yaml"
   [[ -f "$cfg" ]] || { note "$dir: no .pre-commit-config.yaml — skipping"; return 0; }
-  command -v pre-commit >/dev/null 2>&1 || { note "pre-commit not installed — run 'make doctor'"; return 0; }
+  [[ -f "$dir/pyproject.toml" ]] || { note "$dir: no pyproject.toml (pre-commit) — skipping"; return 0; }
   note "$dir: pre-commit"
   if [[ $STAGED -eq 1 ]]; then
     local files
     files=$(git diff --cached --name-only --diff-filter=ACMR -- "$dir" || true)
     [[ -z "$files" ]] && return 0
-    pre-commit run --config "$cfg" --files $files
+    uv run --project "$dir" pre-commit run --config "$cfg" --files $files
   else
-    pre-commit run --config "$cfg" --all-files
+    uv run --project "$dir" pre-commit run --config "$cfg" --all-files
   fi
 }
 

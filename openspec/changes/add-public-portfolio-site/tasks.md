@@ -11,10 +11,10 @@ Work breakdown, mapped to the milestones in the approved plan.
 - [ ] GitHub governance via scripts/github-bootstrap.sh (milestones, labels, issues, board, branch protection) — needs `gh`
 
 ## M1 — Foundations
-- [ ] frontend/ ecosystem: npm workspaces (Astro app + packages/ui @gmocquet/ui), Tailwind v4 tokens
-- [ ] backend/ ecosystem skeleton: pyproject.toml (uv) + uv.lock + src/ placeholder
-- [ ] Per-ecosystem README, CONTRIBUTING, .gitignore, .pre-commit-config.yaml
-- [ ] Pin exact versions + lockfiles; `make lint` green
+- [x] frontend/ ecosystem: npm workspaces (Astro app + packages/ui @gmocquet/ui), Tailwind v4 tokens
+- [x] backend/ ecosystem skeleton: pyproject.toml (uv) + uv.lock + src/ placeholder
+- [x] Per-ecosystem README, CONTRIBUTING, .gitignore, .pre-commit-config.yaml
+- [x] Pin exact versions + lockfiles; `make lint` green
 
 ## M2 — Content (data)
 - [ ] content.config.ts (Zod schemas) + loaders -> content/
