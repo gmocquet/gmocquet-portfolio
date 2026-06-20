@@ -112,6 +112,19 @@
   stack: [GCP, AWS, Airflow, BigQuery, Redshift, GCS, S3, Spark Streaming, Scala, Docker, Python]
   media: []
 
+- id: my-mantic
+  company: My Mantic
+  role: Founder — career transition to Data Engineering
+  location: Paris, France
+  start: "2015-04"
+  end: "2016-08"
+  summary: >-
+    A transition period: I founded my own company while completing my CNAM Engineer's degree (2016)
+    and reskilling into Data Engineering — the pivot that shaped the next decade of my career.
+  highlights: []
+  stack: []
+  media: []
+
 - id: rue-du-commerce
   company: Rue du Commerce
   role: Engineering Manager
@@ -195,4 +208,28 @@
         - Front-end & back-end development of real-estate web applications far beyond brochure sites — listing search engine, email alerts, saved-criteria client area, admin back-office and CRM integration via APIs.
         - Built dynamic, interactive interfaces with JavaScript, CSS and AJAX — updating pages without full reloads for a smoother experience.
   stack: [JavaScript, CSS, AJAX, REST APIs, CRM integration]
+  media: []
+
+- id: evolutis
+  company: Evolutis
+  role: Web Developer / DevOps — intern
+  location: Grenoble, France
+  start: "2005-01"
+  end: "2005-06"
+  summary: >-
+    Six-month engineering internship in web development and operations.
+  highlights: []
+  stack: []
+  media: []
+
+- id: ugitech
+  company: UGITECH
+  role: Web Developer / DevOps — intern
+  location: Ugine, France
+  start: "2004-01"
+  end: "2004-06"
+  summary: >-
+    Six-month engineering internship in web development and operations.
+  highlights: []
+  stack: []
   media: []
