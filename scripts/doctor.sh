@@ -28,14 +28,17 @@ check_required() { if has_cmd "$1"; then ok "$1 ($(${1} --version 2>&1 | head -1
 check_optional() { if has_cmd "$1"; then ok "$1"; else warn "$1 (optional — $2)"; fi; }
 
 main() {
-  section "Tools (required)"
-  for t in git node npm pre-commit direnv uv gh; do check_required "$t"; done
+  section "Tools (required, global)"
+  for t in git node npm uv gh direnv; do check_required "$t"; done
 
-  section "Tools (optional)"
-  check_optional wrangler  "needed for Cloudflare deploy (or use npx)"
-  check_optional bats      "needed to run Bash unit tests"
-  check_optional git-cliff "needed to (re)generate CHANGELOG.md locally"
-  check_optional openspec  "needed for spec-driven workflow CLI"
+  section "Tools (recommended, global via Homebrew)"
+  check_optional git-cliff "brew install git-cliff — local CHANGELOG generation"
+  check_optional bats      "brew install bats-core — Bash unit tests"
+  check_optional openspec  "brew install openspec — spec-driven workflow"
+  check_optional tenv      "brew install tenv — Terraform/OpenTofu (later lots)"
+
+  printf '\n\033[1m%s\033[0m\n  %s\n' "Project dev tools (installed by 'make init', not global)" \
+    "pre-commit → uv dev dep (each ecosystem); wrangler → npm devDependency (frontend)"
 
   section "Access"
   if github_ssh_ok; then ok "GitHub SSH authenticated"; else fail "GitHub SSH (REQUIRED — add your SSH key to GitHub)"; RC=1; fi
