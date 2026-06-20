@@ -1,0 +1,62 @@
+name: Guillaume Mocquet
+title: Staff Data Engineer — Data Platform & Large-Scale Processing
+headline: >-
+  Engineering Leader · Platform & Data — 10+ years leading the teams behind high-traffic,
+  high-volume, API-first platforms at scale. Reliability · observability · DevEx · engineering
+  excellence. AWS · GCP · Kubernetes · AI-augmented.
+location: Paris, Île-de-France, France
+
+summary:
+  - >-
+    I'm an engineering leader who builds platforms — and the teams behind them. Over 20 years in
+    engineering and 10+ years leading teams, I've kept coming back to the same craft: turning messy,
+    high-traffic, data-intensive systems into reliable platforms that other engineers love to build on.
+  - >-
+    I've done this across very different worlds — adtech and e-commerce at scale (Publicis, Rue du
+    Commerce), data & AI consulting for large French enterprises (Quantmetry), commodity intelligence
+    as a scale-up went from ~100 to 750+ people (Kpler), and now satellite geospatial data (Hydrosat).
+    The domain changes; the pattern doesn't. I lay the engineering foundations — CI/CD, observability,
+    GitOps, on-call culture, paved roads — and I level up the people around me.
+  - >-
+    What I care about most: reliability and operational excellence (you build it, you run it),
+    developer experience, and engineering craft (TDD, Clean Code, SOLID). I lead hands-off on feature
+    delivery but stay hands-on where it counts: incidents, architecture decisions, and getting a
+    struggling system back on its feet. Today I work AI-augmented — agentic coding, MCP — and share
+    those practices with my teams.
+
+contacts:
+  email: contact@guillaumemocquet.com
+  linkedin: https://www.linkedin.com/in/guillaumemocquet
+  website: https://guillaumemocquet.com
+
+topSkills:
+  - Engineering Leadership
+  - Platform Engineering
+  - Kubernetes
+
+skills:
+  - category: Leadership & ways of working
+    items: [Engineering management, Hiring & mentoring, On-call culture, Blameless post-mortems, Agile/Scrum, RFCs & technical writing]
+  - category: Platform & DevEx
+    items: [GitOps (ArgoCD), CI/CD (GitHub Actions), Observability (OpenTelemetry, Grafana), Paved roads, Inner-source, Helm]
+  - category: Data & orchestration
+    items: [Airflow, Medallion data lakes/lakehouse, Spark, dbt-style data marts, MLOps]
+  - category: Cloud & infra
+    items: [AWS, GCP, Kubernetes (EKS), Karpenter, KEDA, Terraform/OpenTofu, VPC/CIDR]
+  - category: Languages & craft
+    items: [Python, TypeScript, Scala, TDD, Clean Code, SOLID]
+
+languages:
+  - { name: French, level: Native or Bilingual }
+  - { name: English, level: Full Professional }
+
+certifications:
+  - { name: Advanced Architecting on AWS (with AWS Jam), issuer: AWS }
+  - { name: MLOps Engineering on AWS, issuer: AWS }
+  - { name: Professional Cloud Architect, issuer: Google Cloud }
+
+education:
+  - { school: Conservatoire National des Arts et Métiers, degree: Engineer's degree, field: Computer Science — Information Systems (ISI), year: 2016 }
+  - { school: Conservatoire National des Arts et Métiers, degree: Specialization certificate, field: Big Data Analyst }
+  - { school: Université Grenoble Alpes, degree: Bachelor of Engineering, field: Information Systems & Networks (CASIR), year: 2005 }
+  - { school: Université Grenoble Alpes, degree: Associate of Science, field: Telecommunications & Networks (GTR), year: 2004 }

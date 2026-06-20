@@ -1,0 +1,58 @@
+# Ordered list of showcased projects — the order of items here is the display order.
+# Each item needs a unique `id`. To reorder, move an item up or down.
+
+- id: kpler-mlops-platform
+  title: MLOps platform & squad, from scratch
+  company: Kpler
+  period: 2021–2025
+  role: Staff Data Engineer — founder & manager, MLOps squad
+  summary: >-
+    Founded and managed Kpler's MLOps squad and built its self-service platform for training (GPU),
+    deploying and serving models in production — the foundation that industrialized AI/data use cases
+    while the company scaled from ~100 to 750+ people and crossed $100M ARR.
+  outcomes:
+    - Self-service GPU training, deployment and inference on AWS EKS with Terraform, GitOps and CI/CD.
+    - In-house framework of shared modules (helpers, observability, alerting) with standardized SDLC.
+    - "\"You build it, you run it\": data scientists owned their use cases in production, on-call included."
+  stack: [AWS, EKS, Terraform, Airflow, GitHub Actions, Helm, Aurora PostgreSQL, Elasticsearch, MLOps]
+  media:
+    - label: "ARTE — Planète finance: la course aux matières premières (2022)"
+      url: https://vimeo.com/930397924
+      kind: vimeo
+  featured: true
+
+- id: quantmetry-mlops-white-paper
+  title: MLOps (re)training automation — white paper & talk
+  company: Quantmetry (Capgemini Invent)
+  period: "2019"
+  role: Data & Solution Architect
+  summary: >-
+    Authored chapter 3 of Quantmetry's 5th white paper, "AI in production: life cycle & model drift",
+    covering MLOps (re)training automation across code, architecture and delivery — with a 20-minute
+    companion talk.
+  outcomes:
+    - Published reference on operationalizing ML — model life cycle, drift detection and automated retraining.
+    - Framed the architecture and delivery patterns that turn a model into a maintainable production system.
+  stack: [MLOps, Model drift, CI/CD, Cloud architecture]
+  media:
+    - label: "White paper — AI in production: life cycle & model drift (PDF)"
+      url: /assets/quantmetry-2019-white-paper-mlops.pdf
+      kind: pdf
+  featured: true
+
+- id: rue-du-commerce-product-pages
+  title: Product pages re-architecture at e-commerce scale
+  company: Rue du Commerce
+  period: 2012–2015
+  role: Engineering Manager
+  summary: >-
+    Led the team and the full re-architecture of the product pages — the most conversion-critical
+    surface of a top French e-commerce platform (~€423M annual GMV, 6M monthly visitors) — into
+    SEO-optimized microservices with REST APIs and multi-layer caching.
+  outcomes:
+    - Microservices exposing data via REST APIs on a template-engine front-end, SEO-optimized.
+    - Low-latency rendering under heavy traffic — Redis hot data + CDN at the edge, with per-release asset invalidation.
+    - Weeks after the Nov 2013 launch, the surface carried the company's all-time single-day sales record (~€5.2M group GMV at peak).
+  stack: [Microservices, REST APIs, Redis, CDN, SEO, Template engine]
+  media: []
+  featured: true
