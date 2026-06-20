@@ -41,18 +41,26 @@ for title in "${MILESTONES[@]}"; do
 done
 
 echo "==> project board (v2)"
-if ! gh project list --owner "$OWNER" --format json -q '.projects[].title' 2>/dev/null | grep -Fxq "Portfolio"; then
-  gh project create --owner "$OWNER" --title "Portfolio" >/dev/null && echo "   created: Portfolio"
+if titles=$(gh project list --owner "$OWNER" --format json -q '.projects[].title' 2>/dev/null); then
+  if grep -Fxq "Portfolio" <<<"$titles"; then
+    echo "   exists:  Portfolio"
+  else
+    gh project create --owner "$OWNER" --title "Portfolio" >/dev/null && echo "   created: Portfolio"
+  fi
 else
-  echo "   exists:  Portfolio"
+  echo "   skipped: needs 'project' scope (run: gh auth refresh -s project -h github.com)"
 fi
 
 echo "==> branch protection on main (PR required, 0 approvals — solo-friendly)"
-gh api -X PUT "repos/$REPO/branches/main/protection" \
+if gh api -X PUT "repos/$REPO/branches/main/protection" \
   -H "Accept: application/vnd.github+json" \
   -F "required_pull_request_reviews[required_approving_review_count]=0" \
   -F "required_status_checks=null" \
   -F "enforce_admins=false" \
-  -F "restrictions=null" >/dev/null && echo "   protection set"
+  -F "restrictions=null" >/dev/null 2>&1; then
+  echo "   protection set"
+else
+  echo "   skipped: could not set protection (needs admin rights / token scope)"
+fi
 
 echo "==> done."
