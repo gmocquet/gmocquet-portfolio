@@ -58,6 +58,29 @@ openspec/   # spec-driven change proposals
 
 See `docs/adrs/` for the structural decisions.
 
+## Requirements
+
+Global tooling for macOS — install [Homebrew](https://brew.sh) first, then each tool below. Run
+`make doctor` afterwards to verify tooling and access (GitHub SSH, Anthropic OAuth/API key).
+
+| Tool | Purpose | Install |
+|------|---------|---------|
+| **fnm** (+ Node 24.17.0) | JS runtime for the frontend | `brew install fnm` then `fnm install` (reads `.node-version`) |
+| **uv** | Python toolchain (backend + Python dev tools) | `brew install uv` |
+| **gh** | GitHub CLI (governance, PRs) | `brew install gh` then `gh auth login` |
+| **direnv** | auto-loads `.env` via `.envrc` | `brew install direnv` (add the shell hook, then `direnv allow`) |
+| **git-cliff** | CHANGELOG generation | `brew install git-cliff` |
+| **bats-core** | Bash unit tests | `brew install bats-core` |
+| **openspec** | spec-driven workflow CLI | `brew install openspec` |
+| **tenv** | Terraform/OpenTofu version manager (later lots) | `brew install tenv` |
+
+**Project dev tools are NOT global** — they are pinned dev dependencies installed by `make init`:
+
+- **pre-commit** — pinned in each ecosystem's `pyproject.toml` (uv-managed Python), run via
+  `uv run pre-commit`.
+- **wrangler** — pinned in `frontend/package.json` (`devDependencies`), run via `npx wrangler`.
+- Plus per-ecosystem deps: `ruff` + `pytest` (backend, uv) and Astro / Biome / etc. (frontend, npm).
+
 ## Getting started
 
 Prerequisites and per-stack setup are documented in `frontend/CONTRIBUTING.md` and
