@@ -1,0 +1,23 @@
+---
+import { Button } from "@gmocquet/ui";
+import Base from "../layouts/Base.astro";
+---
+
+<Base
+  title="Guillaume Mocquet — Engineering Manager · Data/AI · Platform & DevEx"
+  description="Portfolio of Guillaume Mocquet — Engineering Manager specialized in Data/AI, Platform and Developer Experience."
+>
+  <main class="mx-auto max-w-3xl px-6 py-24">
+    <p class="text-sm uppercase tracking-widest text-muted">
+      Engineering Manager · Data/AI · Platform &amp; DevEx
+    </p>
+    <h1 class="mt-4 font-display text-5xl text-fg">Guillaume Mocquet</h1>
+    <p class="mt-6 max-w-prose text-muted">
+      Foundations scaffold — the frontend ecosystem is wired: Astro static output, React islands,
+      Tailwind v4 design tokens, and the <code>@gmocquet/ui</code> component library.
+    </p>
+    <div class="mt-8">
+      <Button client:visible>Get in touch</Button>
+    </div>
+  </main>
+</Base>

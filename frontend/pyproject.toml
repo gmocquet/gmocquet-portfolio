@@ -1,0 +1,16 @@
+# This ecosystem is Node/TypeScript; uv is used here ONLY to manage Python-based dev tooling
+# (pre-commit) as a pinned, reproducible dependency — consistent with the backend ecosystem.
+[project]
+name = "portfolio-frontend-tooling"
+version = "0.1.0"
+description = "Frontend ecosystem Python dev tooling (pre-commit), managed by uv."
+requires-python = ">=3.14"
+dependencies = []
+
+[dependency-groups]
+dev = [
+    "pre-commit==4.6.0",
+]
+
+[tool.uv]
+package = false
