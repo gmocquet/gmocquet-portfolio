@@ -1,0 +1,79 @@
+---
+import { ExperienceItem, SkillGroup } from "@gmocquet/ui";
+import { getCollection } from "astro:content";
+import Base from "../layouts/Base.astro";
+import { toExperienceData } from "../lib/content";
+
+const profile = (await getCollection("profile"))[0].data;
+const experiences = (await getCollection("experiences")).sort(
+  (a, b) => a.data.order - b.data.order,
+);
+---
+
+<Base
+  title="About — Guillaume Mocquet"
+  description="Engineering leader: 20+ years in engineering, 10+ years leading teams across adtech, e-commerce, data/AI consulting and geospatial data."
+>
+  <section class="mx-auto max-w-3xl px-6 pt-20 pb-12">
+    <h1 class="font-display text-4xl text-fg">About</h1>
+    <div class="mt-8 space-y-5">
+      {profile.summary.map((p) => <p class="reveal text-lg leading-relaxed text-muted">{p}</p>)}
+    </div>
+  </section>
+
+  <section class="mx-auto max-w-5xl border-t border-border px-6 py-12">
+    <h2 class="font-display text-2xl text-fg">Skills</h2>
+    <div class="mt-8 grid gap-8 sm:grid-cols-2">
+      {profile.skills.map((s) => <SkillGroup category={s.category} items={s.items} />)}
+    </div>
+  </section>
+
+  <section class="mx-auto max-w-5xl border-t border-border px-6 py-12">
+    <h2 class="font-display text-2xl text-fg">Experience</h2>
+    <div class="mt-10 space-y-10">
+      {experiences.map((e) => <ExperienceItem experience={toExperienceData(e.data)} />)}
+    </div>
+  </section>
+
+  <section class="mx-auto grid max-w-5xl gap-10 border-t border-border px-6 py-12 sm:grid-cols-3">
+    <div>
+      <h2 class="font-display text-xl text-fg">Education</h2>
+      <ul class="mt-4 space-y-3">
+        {
+          profile.education.map((ed) => (
+            <li class="text-sm">
+              <p class="text-fg">{ed.degree}{ed.field ? ` — ${ed.field}` : ""}</p>
+              <p class="text-muted">{ed.school}{ed.year ? ` · ${ed.year}` : ""}</p>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+    <div>
+      <h2 class="font-display text-xl text-fg">Certifications</h2>
+      <ul class="mt-4 space-y-3">
+        {
+          profile.certifications.map((ct) => (
+            <li class="text-sm">
+              <p class="text-fg">{ct.name}</p>
+              {ct.issuer ? <p class="text-muted">{ct.issuer}</p> : null}
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+    <div>
+      <h2 class="font-display text-xl text-fg">Languages</h2>
+      <ul class="mt-4 space-y-3">
+        {
+          profile.languages.map((lg) => (
+            <li class="text-sm">
+              <span class="text-fg">{lg.name}</span>
+              <span class="text-muted"> — {lg.level}</span>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+</Base>

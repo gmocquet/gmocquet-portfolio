@@ -1,5 +1,7 @@
-import { defineCollection, z } from "astro:content";
-import { file, glob } from "astro/loaders";
+import { defineCollection } from "astro:content";
+import { z } from "astro:schema";
+import { glob } from "astro/loaders";
+import { orderedYaml } from "./loaders/ordered-yaml";
 
 // A media/reference link attached to an experience or a project.
 const mediaLink = z.object({
@@ -47,10 +49,12 @@ const profile = defineCollection({
   }),
 });
 
-// Single ordered list (content/experiences.yaml). Array order = display order (most recent first).
+// Single ordered list (content/experiences.yaml). Array order = display order (most recent first);
+// the loader injects `order` from each item's position — never authored by hand.
 const experiences = defineCollection({
-  loader: file("content/experiences.yaml"),
+  loader: orderedYaml("content/experiences.yaml"),
   schema: z.object({
+    order: z.number(),
     company: z.string(),
     role: z.string(),
     location: z.string().optional(),
@@ -65,10 +69,11 @@ const experiences = defineCollection({
   }),
 });
 
-// Single ordered list (content/projects.yaml). Array order = display order.
+// Single ordered list (content/projects.yaml). Array order = display order (loader injects `order`).
 const projects = defineCollection({
-  loader: file("content/projects.yaml"),
+  loader: orderedYaml("content/projects.yaml"),
   schema: z.object({
+    order: z.number(),
     title: z.string(),
     company: z.string().optional(),
     period: z.string().optional(),
