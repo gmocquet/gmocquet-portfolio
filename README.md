@@ -97,7 +97,9 @@ make lint     # auto-format + lint + pre-commit checks (per ecosystem)
 
 ## Governance
 
-- **Every change goes through a Pull Request**; `main` is protected (PR-only), checks required.
+- **Every change goes through a Pull Request**; direct pushes to `main` are blocked by a local
+  `pre-push` hook (`make init`). Server-side enforcement (ruleset) is enabled once the repo is public
+  or on GitHub Pro — `make gh-bootstrap` provisions it automatically when available.
 - **Conventional Commits** drive automated **semver tagging** (on push to `main`) and the generated
   **`CHANGELOG.md`** (on tag). See `.github/workflows/`.
 - Spec-driven: new capabilities start as an **OpenSpec** change proposal under `openspec/`.

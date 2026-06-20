@@ -51,16 +51,28 @@ else
   echo "   skipped: needs 'project' scope (run: gh auth refresh -s project -h github.com)"
 fi
 
-echo "==> branch protection on main (PR required, 0 approvals — solo-friendly)"
-if gh api -X PUT "repos/$REPO/branches/main/protection" \
-  -H "Accept: application/vnd.github+json" \
-  -F "required_pull_request_reviews[required_approving_review_count]=0" \
-  -F "required_status_checks=null" \
-  -F "enforce_admins=false" \
-  -F "restrictions=null" >/dev/null 2>&1; then
-  echo "   protection set"
+echo "==> branch ruleset on main (PR-only) — requires a public repo or GitHub Pro for private repos"
+existing_rs=$(gh api "repos/$REPO/rulesets" -q '.[].name' 2>/dev/null || true)
+if grep -Fxq "main-protection" <<<"$existing_rs"; then
+  echo "   exists:  main-protection"
+elif gh api -X POST "repos/$REPO/rulesets" --input - >/dev/null 2>&1 <<'JSON'
+{
+  "name": "main-protection",
+  "target": "branch",
+  "enforcement": "active",
+  "conditions": { "ref_name": { "include": ["~DEFAULT_BRANCH"], "exclude": [] } },
+  "rules": [
+    { "type": "pull_request", "parameters": { "required_approving_review_count": 0, "dismiss_stale_reviews_on_push": false, "require_code_owner_review": false, "require_last_push_approval": false, "required_review_thread_resolution": false } },
+    { "type": "non_fast_forward" }
+  ]
+}
+JSON
+then
+  echo "   created: main-protection ruleset"
 else
-  echo "   skipped: could not set protection (needs admin rights / token scope)"
+  echo "   skipped: server-side protection unavailable on a private free-plan repo."
+  echo "            'make init' installs a local pre-push hook enforcing PR-only meanwhile;"
+  echo "            re-run this after making the repo public (or on GitHub Pro) to enable it."
 fi
 
 echo "==> done."
