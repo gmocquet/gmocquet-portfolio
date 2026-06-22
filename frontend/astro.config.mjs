@@ -5,7 +5,7 @@ import { defineConfig } from "astro/config";
 
 // https://astro.build/config
 export default defineConfig({
-  site: "https://guillaumemocquet.com",
+  site: "https://www.guillaumemocquet.com",
   output: "static",
   integrations: [react()],
   i18n: {

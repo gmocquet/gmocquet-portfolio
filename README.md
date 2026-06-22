@@ -95,6 +95,20 @@ make build    # produce the static site
 make lint     # auto-format + lint + pre-commit checks (per ecosystem)
 ```
 
+## Deployment
+
+Hosting is **Cloudflare Pages** (see ADR 0002/0005/0006). **DNS stays at OVH** — to keep the email and
+DNSSEC untouched — so only `www` is pointed at Pages; the apex redirects to `www`. Three parts:
+
+- **Platform as IaC** — `infra/cloudflare/` (OpenTofu) provisions the Pages project and its `www`
+  custom domain. See `infra/cloudflare/README.md` for the apply runbook and token scopes.
+- **DNS at OVH** (manual, one-time, no nameserver change) — a CNAME `www → guillaumemocquet.pages.dev`
+  validates the custom domain; the apex 301-redirects to `https://www.guillaumemocquet.com`.
+- **Continuous deploy** — `.github/workflows/deploy.yml` runs `make deploy` (build + `wrangler` Direct
+  Upload) on every push to `main`. It needs the `CLOUDFLARE_API_TOKEN` / `CLOUDFLARE_ACCOUNT_ID`
+  secrets and the optional `PUBLIC_CF_BEACON_TOKEN` variable (cookieless analytics beacon).
+  `make deploy` also works locally (see `.env.example`).
+
 ## Governance
 
 - **Every change goes through a Pull Request**; direct pushes to `main` are blocked by a local

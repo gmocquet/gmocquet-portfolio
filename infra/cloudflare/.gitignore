@@ -1,0 +1,9 @@
+# OpenTofu local state and caches — never committed (state can hold sensitive values).
+.terraform/
+*.tfstate
+*.tfstate.*
+crash.log
+
+# Real variable values — commit only the example.
+*.tfvars
+!*.tfvars.example
