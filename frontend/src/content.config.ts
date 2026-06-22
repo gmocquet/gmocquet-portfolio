@@ -25,10 +25,8 @@ const profile = defineCollection({
     location: z.string(),
     summary: z.array(z.string()), // paragraphs
     contacts: z.object({
-      email: z.string().email().optional(),
       linkedin: z.string().url().optional(),
       github: z.string().url().optional(),
-      website: z.string().url().optional(),
     }),
     topSkills: z.array(z.string()).default([]),
     skills: z.array(z.object({ category: z.string(), items: z.array(z.string()) })).default([]),
