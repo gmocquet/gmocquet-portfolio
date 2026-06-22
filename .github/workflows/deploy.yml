@@ -1,0 +1,46 @@
+name: deploy
+
+# On every push to main (i.e. after a PR merge), build the static site and deploy it to Cloudflare
+# Pages via wrangler Direct Upload. CI and local use the SAME `make deploy` target (reproducibility).
+# Requires the CLOUDFLARE_API_TOKEN / CLOUDFLARE_ACCOUNT_ID secrets and the PUBLIC_CF_BEACON_TOKEN
+# variable. Skipped for [skip ci] commits (e.g. the changelog bot) to avoid redundant deploys.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    if: ${{ !contains(github.event.head_commit.message, '[skip ci]') }}
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: https://guillaumemocquet.com
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Set up Node
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        with:
+          node-version-file: frontend/.node-version
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        run: npm --prefix frontend ci
+
+      - name: Build and deploy to Cloudflare Pages
+        run: make deploy
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          PUBLIC_CF_BEACON_TOKEN: ${{ vars.PUBLIC_CF_BEACON_TOKEN }}

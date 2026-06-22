@@ -95,6 +95,19 @@ make build    # produce the static site
 make lint     # auto-format + lint + pre-commit checks (per ecosystem)
 ```
 
+## Deployment
+
+Hosting is **Cloudflare Pages** with the domain `guillaumemocquet.com` (see ADR 0002/0005). Two parts:
+
+- **Platform as IaC** — `infra/cloudflare/` (OpenTofu) provisions the DNS zone, the Pages project,
+  the custom domains (apex + `www`), the DNS records and the cookieless Web Analytics site. See
+  `infra/cloudflare/README.md` for the apply runbook and the exact API-token scopes. The one manual
+  step is delegating the domain's nameservers **OVH → Cloudflare** (registrar side).
+- **Continuous deploy** — `.github/workflows/deploy.yml` runs `make deploy` (build + `wrangler` Direct
+  Upload) on every push to `main`. It needs the `CLOUDFLARE_API_TOKEN` / `CLOUDFLARE_ACCOUNT_ID`
+  secrets and the `PUBLIC_CF_BEACON_TOKEN` variable (the Web Analytics token, an OpenTofu output).
+  `make deploy` also works locally (see `.env.example`).
+
 ## Governance
 
 - **Every change goes through a Pull Request**; direct pushes to `main` are blocked by a local

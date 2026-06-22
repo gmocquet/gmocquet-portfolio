@@ -9,6 +9,7 @@ with a new ADR rather than editing an old one. Format: Context → Decision → 
 - [0002 — Static Astro site on Cloudflare Pages](0002-astro-static-cloudflare-pages.md)
 - [0003 — Content/presentation decoupling (YAML + Zod)](0003-content-presentation-decoupling.md)
 - [0004 — Makefile + scripts/ as the single task runner](0004-makefile-scripts-task-runner.md)
+- [0005 — IaC with OpenTofu; deploy via wrangler Direct Upload in CI](0005-iac-opentofu-cloudflare-deploy.md)
 
 ## Adding an ADR
 

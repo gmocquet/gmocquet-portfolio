@@ -45,3 +45,19 @@ A visual pass on the M3 site produced four refinements, delivered as focused PRs
 - **Home (PR #8).** De-emphasized the raw role count in favor of a scale-impact stat; "Selected work"
   stays the featured subset with a counted `All projects (N)` link.
 - Introduced **vitest** (frontend) for the pure helpers; `make test` now runs the frontend suite.
+- Pre-publish: removed the email (and self website link) from the site — contacts are now LinkedIn +
+  GitHub only (#10).
+
+## 2026-06-22 — M5: deploy to Cloudflare Pages (full IaC)
+
+- **OpenTofu** (`infra/cloudflare/`, provider `cloudflare` 5.21.0 pinned, lock committed, binary pinned
+  via `tenv`) provisions the platform per ADR 0002/0005: DNS **zone**, **Pages project** (Direct
+  Upload), custom **domains** (apex + `www`), routing **DNS records**, and a cookieless **Web
+  Analytics** site. `tofu validate` green. State local for the bootstrap (gitignored); remote backend
+  is the planned hardening step.
+- **CI deploy** (`.github/workflows/deploy.yml`): on push to `main`, build + `wrangler` Direct Upload
+  via the shared `make deploy` target (pinned Node, SHA-pinned actions). Platform (OpenTofu) and
+  artifact (wrangler) are deliberately separated.
+- **Web Analytics** beacon injected in-code in `Base.astro`, gated by the public build variable
+  `PUBLIC_CF_BEACON_TOKEN` (an OpenTofu output) — absent locally, present once configured.
+- The only non-codified step is the OVH → Cloudflare **nameserver delegation** at the registrar.
