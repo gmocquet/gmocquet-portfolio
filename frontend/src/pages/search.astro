@@ -1,0 +1,42 @@
+---
+import Search from "astro-pagefind/components/Search.astro";
+import Base from "../layouts/Base.astro";
+---
+
+<Base
+  title="Search — Guillaume Mocquet"
+  description="Search across projects, experience and publications."
+>
+  {/* `data-pagefind-ignore` keeps the search page itself out of the search index. */}
+  <section class="mx-auto max-w-3xl px-6 pt-20 pb-24" data-pagefind-ignore>
+    <h1 class="font-display text-4xl text-fg">Search</h1>
+    <p class="mt-4 text-muted">Search across projects, experience and publications.</p>
+    <div class="mt-8">
+      <Search
+        instance="search"
+        searchboxOptions={{ placeholder: "Search projects, experience, publications…" }}
+      />
+    </div>
+  </section>
+</Base>
+
+{/*
+  Map Pagefind's component-ui custom properties to the site's luxe tokens.
+  `is:global` so it reaches the searchbox subtree; ships only on this page.
+  The mapping references `--color-*` tokens, so it follows the light/dark theme.
+*/}
+<style is:global>
+  :root {
+    --pf-font: var(--font-sans);
+    --pf-background: var(--color-surface);
+    --pf-text: var(--color-fg);
+    --pf-text-secondary: var(--color-muted);
+    --pf-text-muted: var(--color-muted);
+    --pf-border: var(--color-border);
+    --pf-border-focus: var(--color-accent);
+    --pf-border-radius: 0.5rem;
+    --pf-hover: color-mix(in oklch, var(--color-fg) 6%, transparent);
+    --pf-mark: var(--color-accent);
+    --pf-outline-focus: var(--color-accent);
+  }
+</style>

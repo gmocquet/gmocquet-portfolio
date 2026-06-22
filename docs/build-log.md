@@ -24,3 +24,19 @@ generalizable draft for LinkedIn/blog articles. Most recent entry **last**.
   `pre-commit` managed as a uv dev dep (Python) per ecosystem, orchestrating Biome/ruff.
 - Wired `scripts/lint.sh` to run pre-commit via `uv run --project <eco>`; each hook runs from its own
   ecosystem dir (correct tool root). **`make build` / `make lint` / `make doctor` all green.**
+
+## 2026-06-22 — Post-M3 refinements (visual-pass TODO)
+
+A visual pass on the M3 site produced four refinements, delivered as three focused PRs off `main`:
+
+- **Search (this PR)** — client-side search via **Pagefind** (`astro-pagefind` 2.0.0): a static index
+  built on `astro build` and served in-browser (no backend). New `/search` page renders the Pagefind
+  component UI themed to the site tokens; `data-pagefind-body` on `Base.astro`'s `<main>` scopes
+  indexing (header/footer excluded), the page excludes itself (`data-pagefind-ignore`). Header gains a
+  Search entry. Dev serves the last built index — search is live after a build.
+- **Video embeds (PR B)** — `@gmocquet/ui` gains a content-agnostic `VideoEmbed` (responsive 16:9,
+  lazy, privacy-friendly: `youtube-nocookie` / Vimeo `dnt`) plus a pure `toEmbedUrl` helper; project
+  pages embed video media inline instead of linking out (other media stay as links).
+- **Home (PR C)** — de-emphasize the raw role count (EM positioning) in favor of a scale-impact stat;
+  the home "Selected work" stays the featured subset with a counted "All projects (N)" link, making
+  the featured/all distinction meaningful as more projects are authored.

@@ -32,4 +32,15 @@ npm run check        # astro check (type-check .astro + TS)
 npm run lint         # biome check
 ```
 
+## Search
+
+Client-side search is powered by **Pagefind** (`astro-pagefind` integration) — a static index built
+from the rendered HTML, served entirely in the browser (no backend). The integration runs on
+`astro build` and emits the index under `dist/pagefind/`; the `/search` page renders the Pagefind
+component UI, themed to the site tokens. Only the page `<main>` is indexed (`data-pagefind-body` in
+`src/layouts/Base.astro`); the search page excludes itself (`data-pagefind-ignore`).
+
+> **Dev caveat:** Pagefind serves a *prebuilt* index. Search returns results only after at least one
+> `make build`; `make dev` serves the last built index. Validate on `npm run preview`.
+
 See `CONTRIBUTING.md` for prerequisites (focus macOS 26.5.1).
