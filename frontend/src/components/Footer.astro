@@ -6,10 +6,8 @@ const c = profile.contacts;
 const year = new Date().getFullYear();
 
 const links: { href: string; label: string; ext?: boolean }[] = [];
-if (c.email) links.push({ href: `mailto:${c.email}`, label: "Email" });
 if (c.linkedin) links.push({ href: c.linkedin, label: "LinkedIn", ext: true });
 if (c.github) links.push({ href: c.github, label: "GitHub", ext: true });
-if (c.website) links.push({ href: c.website, label: "Website", ext: true });
 ---
 
 <footer class="mt-24 border-t border-border">
