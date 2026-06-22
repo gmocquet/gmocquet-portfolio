@@ -7,8 +7,10 @@ export { mediaIcons } from "./blocks/registry";
 export { SkillGroup } from "./blocks/skill-group";
 export { Stat } from "./blocks/stat";
 export { TagMatcher, type TagMatcherProps } from "./blocks/tag-matcher";
+export { VideoEmbed } from "./blocks/video-embed";
 export { buildTagGroups, type MatchEntry, type TagGroup } from "./lib/tags";
 export { cn } from "./lib/utils";
+export { toEmbedUrl } from "./lib/video";
 export type {
   ExperienceData,
   HighlightGroup,
