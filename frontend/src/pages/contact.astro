@@ -1,0 +1,44 @@
+---
+import { getCollection } from "astro:content";
+import Base from "../layouts/Base.astro";
+
+const profile = (await getCollection("profile"))[0].data;
+const c = profile.contacts;
+
+const links: { href: string; label: string; value: string; ext?: boolean }[] = [];
+if (c.email) links.push({ href: `mailto:${c.email}`, label: "Email", value: c.email });
+if (c.linkedin) links.push({ href: c.linkedin, label: "LinkedIn", value: "in/guillaumemocquet", ext: true });
+if (c.github) links.push({ href: c.github, label: "GitHub", value: "@gmocquet", ext: true });
+if (c.website) links.push({ href: c.website, label: "Website", value: "guillaumemocquet.com", ext: true });
+---
+
+<Base
+  title="Contact — Guillaume Mocquet"
+  description="Get in touch with Guillaume Mocquet."
+>
+  <section class="mx-auto max-w-3xl px-6 pt-20 pb-16">
+    <h1 class="font-display text-4xl text-fg">Get in touch</h1>
+    <p class="mt-4 max-w-xl text-muted">
+      Open to Engineering Manager roles around Data/AI, Platform and Developer Experience. The fastest
+      way to reach me is by email.
+    </p>
+    <ul class="mt-10 border-y border-border">
+      {
+        links.map((l) => (
+          <li class="border-t border-border first:border-t-0">
+            <a
+              href={l.href}
+              {...l.ext ? { target: "_blank", rel: "noopener noreferrer" } : {}}
+              class="group flex items-center justify-between py-5"
+            >
+              <span class="text-fg">{l.label}</span>
+              <span class="text-sm text-muted transition-colors group-hover:text-accent">
+                {l.value} <span aria-hidden>→</span>
+              </span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+</Base>
