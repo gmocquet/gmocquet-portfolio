@@ -32,4 +32,13 @@ npm run check        # astro check (type-check .astro + TS)
 npm run lint         # biome check
 ```
 
+## Tags (skill matcher)
+
+The `/tags` page lets a visitor **select skill tags** and see whether they're in the profile and
+**where** they were applied. It's a React island (`@gmocquet/ui` `TagMatcher`) fed entirely by content
+props — no backend, no index. The tag catalog merges the curated `profile.skills` groups with a
+"Tech stack" group derived from every experience/project `stack`; selecting tags ranks the matching
+experiences/projects (pure helpers in `packages/ui/src/lib/tags.ts`, unit-tested) and deep-links to
+`/projects/<id>` and `/about#exp-<id>`. The selection is mirrored in a shareable `?tags=` query string.
+
 See `CONTRIBUTING.md` for prerequisites (focus macOS 26.5.1).
