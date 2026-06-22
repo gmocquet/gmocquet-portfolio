@@ -5,6 +5,9 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 
 : "${CF_PAGES_PROJECT:=guillaumemocquet}"
+: "${CF_PAGES_BRANCH:=main}"
 
 npm --prefix frontend run build
-npx --prefix frontend wrangler pages deploy frontend/dist --project-name "$CF_PAGES_PROJECT"
+npx --prefix frontend wrangler pages deploy frontend/dist \
+  --project-name "$CF_PAGES_PROJECT" \
+  --branch "$CF_PAGES_BRANCH"

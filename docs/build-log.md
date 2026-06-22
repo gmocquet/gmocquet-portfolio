@@ -45,3 +45,27 @@ A visual pass on the M3 site produced four refinements, delivered as focused PRs
 - **Home (PR #8).** De-emphasized the raw role count in favor of a scale-impact stat; "Selected work"
   stays the featured subset with a counted `All projects (N)` link.
 - Introduced **vitest** (frontend) for the pure helpers; `make test` now runs the frontend suite.
+- Pre-publish: removed the email (and self website link) from the site — contacts are now LinkedIn +
+  GitHub only (#10).
+
+## 2026-06-22 — M5: deploy to Cloudflare Pages (full IaC)
+
+- **OpenTofu** (`infra/cloudflare/`, provider `cloudflare` 5.21.0 pinned, lock committed, binary pinned
+  via `tenv`) provisions the platform per ADR 0002/0005: DNS **zone**, **Pages project** (Direct
+  Upload), custom **domains** (apex + `www`), routing **DNS records**, and a cookieless **Web
+  Analytics** site. `tofu validate` green. State local for the bootstrap (gitignored); remote backend
+  is the planned hardening step.
+- **CI deploy** (`.github/workflows/deploy.yml`): on push to `main`, build + `wrangler` Direct Upload
+  via the shared `make deploy` target (pinned Node, SHA-pinned actions). Platform (OpenTofu) and
+  artifact (wrangler) are deliberately separated.
+- **Web Analytics** beacon injected in-code in `Base.astro`, gated by the public build variable
+  `PUBLIC_CF_BEACON_TOKEN` — absent locally, present once configured.
+- **Applied & went live:** `tofu apply` created the Pages project; a first `wrangler` deploy put the
+  site live on `guillaumemocquet.pages.dev` immediately.
+- **DNS pivot (ADR 0006).** The domain carries **active DNSSEC** and a **production OVH mailbox**;
+  Cloudflare hadn't imported the MX/SPF, so an OVH → Cloudflare nameserver switch would have broken
+  email and the DNSSEC chain (SERVFAIL). Chose to **keep DNS at OVH** and point only `www` at Pages
+  (CNAME), apex → 301 → `www`. Reworked the IaC down to the Pages project + `www` custom domain
+  (destroyed the zone/records); email and DNSSEC are left fully intact.
+- **Web Analytics deferred:** creating a RUM site needs an account-analytics *edit* scope Cloudflare
+  doesn't expose to scoped tokens → provision it from the dashboard later; the in-code beacon stays.
