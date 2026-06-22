@@ -6,9 +6,11 @@ import { toProjectData, yearsInEngineering } from "../lib/content";
 
 const profile = (await getCollection("profile"))[0].data;
 const experiences = await getCollection("experiences");
-const featured = (await getCollection("projects"))
+const projects = await getCollection("projects");
+const featured = projects
   .filter((p) => p.data.featured)
   .sort((a, b) => a.data.order - b.data.order);
+const total = projects.length;
 const years = yearsInEngineering(experiences);
 
 const ctaSolid =
@@ -37,7 +39,7 @@ const ctaGhost =
     <div class="grid grid-cols-2 gap-8 sm:grid-cols-3">
       <Stat value={`${years}`} label="years in engineering" />
       <Stat value="10+" label="years leading teams" />
-      <Stat value={`${experiences.length}`} label="roles, 2004 → today" />
+      <Stat value="$100M+" label="ARR scaled at Kpler" />
     </div>
   </section>
 
@@ -45,7 +47,7 @@ const ctaGhost =
     <div class="flex items-baseline justify-between">
       <h2 class="font-display text-3xl text-fg">Selected work</h2>
       <a href="/projects" class="text-sm text-muted transition-colors hover:text-accent">
-        All projects →
+        All projects ({total}) →
       </a>
     </div>
     <div class="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
