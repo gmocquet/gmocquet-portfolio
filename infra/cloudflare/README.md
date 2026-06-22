@@ -1,22 +1,19 @@
 # Cloudflare infrastructure (OpenTofu)
 
-Declares the Cloudflare resources behind the public site: the DNS **zone**, the **Pages** project,
-its custom **domains** (apex + `www`), the routing **DNS records**, and the cookieless **Web
-Analytics** site. OpenTofu version is pinned via `.opentofu-version` (tenv); the provider is pinned in
+Declares the Cloudflare resources behind the public site: the **Pages** project and its **`www`
+custom domain**. OpenTofu version is pinned via `.opentofu-version` (tenv); the provider is pinned in
 `versions.tf` with `.terraform.lock.hcl` committed.
 
-> Static assets are **not** managed here — they are pushed to the Pages project by `wrangler`
-> (`scripts/deploy.sh`, run from `deploy.yml`). This file provisions the platform; CI deploys the build.
+> **DNS stays at OVH.** We do **not** delegate the zone to Cloudflare — to leave the email (OVH MX/SPF)
+> and DNSSEC untouched (see ADR 0006). Only `www` is pointed at Pages via a CNAME at OVH; the apex
+> redirects to `www`. Static assets are pushed to the Pages project by `wrangler`
+> (`scripts/deploy.sh`, run from `deploy.yml`).
 
 ## Prerequisites
 
 1. A Cloudflare account (free) and your **Account ID**.
-2. A Cloudflare **API token** with these scopes:
-   - Account · **Cloudflare Pages** : Edit
-   - Account · **Account Settings** : Read
-   - Account · **Account Analytics** : Edit
-   - Zone · **Zone** : Edit
-   - Zone · **DNS** : Edit
+2. A Cloudflare **API token** with: Account · *Cloudflare Pages* : Edit, Account · *Account Settings* : Read.
+   *(Zone/DNS scopes are no longer needed since the zone isn't on Cloudflare.)*
 3. `tenv` installed (it installs the pinned OpenTofu on first run: `tenv opentofu install`).
 
 ## Apply
@@ -31,21 +28,24 @@ tofu plan
 tofu apply
 ```
 
-Outputs:
+Output: `pages_subdomain` — the `*.pages.dev` host to use as the **CNAME target for `www`** at OVH.
 
-- `nameservers` — set these as the domain's nameservers **at OVH** to delegate DNS to Cloudflare.
-- `pages_subdomain` — the `*.pages.dev` URL the custom domains point to.
-- `web_analytics_token` — set as the GitHub Actions **variable** `PUBLIC_CF_BEACON_TOKEN`
-  (`gh variable set PUBLIC_CF_BEACON_TOKEN "$(tofu output -raw web_analytics_token)"`).
+## DNS at OVH (manual, one-time — no nameserver change)
+
+1. **CNAME** `www` → `guillaumemocquet.pages.dev.` (DNS-only). This validates the `www` Pages custom
+   domain and routes `www` to the site (Cloudflare provisions the TLS cert automatically).
+2. **Apex redirect** `guillaumemocquet.com` → `https://www.guillaumemocquet.com` (301), via OVH's
+   domain redirection. The redirect adds an A record at the apex, which coexists with the MX (email).
+3. Nothing else changes — **MX, SPF and DNSSEC stay exactly as they are**.
+
+## Web Analytics
+
+Not managed here: creating a Cloudflare Web Analytics (RUM) site needs an account-analytics *edit*
+scope that Cloudflare does not expose to scoped API tokens. Provision the WA site once from the
+dashboard, then set its token as the `PUBLIC_CF_BEACON_TOKEN` build variable — the cookieless beacon
+is already wired in-code (`Base.astro`).
 
 ## State
 
-Local state for the solo bootstrap (`*.tfstate` is gitignored — it can hold sensitive values).
-**Follow-up (recommended before sharing operations):** move to a remote backend (HCP Terraform or a
-Cloudflare R2 S3-compatible bucket) for shared, locked, durable state.
-
-## Notes
-
-- The one step that cannot be codified here is changing the registrar nameservers at **OVH** — do it
-  once with the `nameservers` output, then wait for activation.
-- After `apply`, the zone is pending until OVH points at the Cloudflare nameservers.
+Local state for the solo bootstrap (`*.tfstate` is gitignored). **Follow-up:** move to a remote backend
+(HCP Terraform or a Cloudflare R2 S3-compatible bucket) for shared, locked, durable state.

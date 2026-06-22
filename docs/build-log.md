@@ -59,5 +59,13 @@ A visual pass on the M3 site produced four refinements, delivered as focused PRs
   via the shared `make deploy` target (pinned Node, SHA-pinned actions). Platform (OpenTofu) and
   artifact (wrangler) are deliberately separated.
 - **Web Analytics** beacon injected in-code in `Base.astro`, gated by the public build variable
-  `PUBLIC_CF_BEACON_TOKEN` (an OpenTofu output) — absent locally, present once configured.
-- The only non-codified step is the OVH → Cloudflare **nameserver delegation** at the registrar.
+  `PUBLIC_CF_BEACON_TOKEN` — absent locally, present once configured.
+- **Applied & went live:** `tofu apply` created the Pages project; a first `wrangler` deploy put the
+  site live on `guillaumemocquet.pages.dev` immediately.
+- **DNS pivot (ADR 0006).** The domain carries **active DNSSEC** and a **production OVH mailbox**;
+  Cloudflare hadn't imported the MX/SPF, so an OVH → Cloudflare nameserver switch would have broken
+  email and the DNSSEC chain (SERVFAIL). Chose to **keep DNS at OVH** and point only `www` at Pages
+  (CNAME), apex → 301 → `www`. Reworked the IaC down to the Pages project + `www` custom domain
+  (destroyed the zone/records); email and DNSSEC are left fully intact.
+- **Web Analytics deferred:** creating a RUM site needs an account-analytics *edit* scope Cloudflare
+  doesn't expose to scoped tokens → provision it from the dashboard later; the in-code beacon stays.
