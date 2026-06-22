@@ -24,3 +24,24 @@ generalizable draft for LinkedIn/blog articles. Most recent entry **last**.
   `pre-commit` managed as a uv dev dep (Python) per ecosystem, orchestrating Biome/ruff.
 - Wired `scripts/lint.sh` to run pre-commit via `uv run --project <eco>`; each hook runs from its own
   ecosystem dir (correct tool root). **`make build` / `make lint` / `make doctor` all green.**
+
+## 2026-06-22 — Post-M3 refinements (visual-pass TODO)
+
+A visual pass on the M3 site produced four refinements, delivered as focused PRs off `main`:
+
+- **`/tags` skill matcher (this PR).** A discovery page where a visitor selects skill tags and sees
+  whether they're in my toolkit and **where** I've applied them. Built as a React island
+  (`@gmocquet/ui` `TagMatcher`) fed by content props (content-agnostic). The tag catalog merges the
+  curated `profile.skills` groups with a "Tech stack" group built from every experience/project
+  `stack`; selecting tags ranks the matching experiences/projects by relevance (pure, unit-tested
+  `buildTagGroups`/`rankEntries`), with deep links to `/projects/<id>` and `/about#exp-<id>` and a
+  shareable `?tags=` URL. Searching a skill that isn't in the catalog is the explicit "I don't have
+  it" answer.
+  - *Direction change:* a full-text search via **Pagefind** was prototyped first; we dropped it in
+    favor of this tag-based matcher — the visitor's real question is "do you have skill X?", not
+    "find the word X on the site".
+- **Inline video embeds (PR #7).** `@gmocquet/ui` `VideoEmbed` (responsive 16:9, lazy, privacy-friendly
+  `youtube-nocookie` / Vimeo `dnt`) + pure `toEmbedUrl` helper; project pages embed video media inline.
+- **Home (PR #8).** De-emphasized the raw role count in favor of a scale-impact stat; "Selected work"
+  stays the featured subset with a counted `All projects (N)` link.
+- Introduced **vitest** (frontend) for the pure helpers; `make test` now runs the frontend suite.
