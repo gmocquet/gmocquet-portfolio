@@ -3,7 +3,7 @@
 # the SAME targets (single source of commands -> reproducibility). Run `make help` to list targets.
 
 .DEFAULT_GOAL := help
-SHELL := /usr/bin/env bash
+SHELL := /bin/bash
 .ONESHELL:
 
 .PHONY: help doctor init dev build lint test i18n changelog deploy gh-bootstrap
