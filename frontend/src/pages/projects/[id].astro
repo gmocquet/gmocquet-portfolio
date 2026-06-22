@@ -1,5 +1,5 @@
 ---
-import { Badge, MediaLinks } from "@gmocquet/ui";
+import { Badge, MediaLinks, VideoEmbed, toEmbedUrl } from "@gmocquet/ui";
 import type { GetStaticPaths } from "astro";
 import { getCollection } from "astro:content";
 import Base from "../../layouts/Base.astro";
@@ -11,6 +11,10 @@ export const getStaticPaths = (async () => {
 
 const { project: p } = Astro.props;
 const meta = [p.company, p.period, p.role].filter(Boolean).join(" · ");
+
+// Embeddable videos render inline; everything else stays a plain reference link.
+const videos = p.media.filter((m) => toEmbedUrl(m) !== null);
+const links = p.media.filter((m) => toEmbedUrl(m) === null);
 ---
 
 <Base title={`${p.title} — Guillaume Mocquet`} description={p.summary}>
@@ -42,6 +46,16 @@ const meta = [p.company, p.period, p.role].filter(Boolean).join(" · ");
       ) : null
     }
 
-    {p.media.length > 0 ? <div class="mt-8"><MediaLinks media={p.media} /></div> : null}
+    {
+      videos.length > 0 ? (
+        <div class="mt-8 space-y-6">
+          {videos.map((m) => (
+            <VideoEmbed media={m} />
+          ))}
+        </div>
+      ) : null
+    }
+
+    {links.length > 0 ? <div class="mt-8"><MediaLinks media={links} /></div> : null}
   </article>
 </Base>
