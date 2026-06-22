@@ -1,0 +1,21 @@
+---
+import { ProjectCard } from "@gmocquet/ui";
+import { getCollection } from "astro:content";
+import Base from "../../layouts/Base.astro";
+import { toProjectData } from "../../lib/content";
+
+const projects = (await getCollection("projects")).sort((a, b) => a.data.order - b.data.order);
+---
+
+<Base
+  title="Projects — Guillaume Mocquet"
+  description="Selected platforms, missions and publications."
+>
+  <section class="mx-auto max-w-5xl px-6 pt-20 pb-16">
+    <h1 class="font-display text-4xl text-fg">Projects</h1>
+    <p class="mt-4 max-w-2xl text-muted">A selection of platforms, missions and publications.</p>
+    <div class="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+      {projects.map((p) => <ProjectCard project={toProjectData(p)} href={`/projects/${p.id}`} />)}
+    </div>
+  </section>
+</Base>

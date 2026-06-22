@@ -1,0 +1,34 @@
+---
+import { getCollection } from "astro:content";
+
+const profile = (await getCollection("profile"))[0].data;
+const c = profile.contacts;
+const year = new Date().getFullYear();
+
+const links: { href: string; label: string; ext?: boolean }[] = [];
+if (c.email) links.push({ href: `mailto:${c.email}`, label: "Email" });
+if (c.linkedin) links.push({ href: c.linkedin, label: "LinkedIn", ext: true });
+if (c.github) links.push({ href: c.github, label: "GitHub", ext: true });
+if (c.website) links.push({ href: c.website, label: "Website", ext: true });
+---
+
+<footer class="mt-24 border-t border-border">
+  <div
+    class="mx-auto flex max-w-5xl flex-col gap-4 px-6 py-10 sm:flex-row sm:items-center sm:justify-between"
+  >
+    <p class="text-sm text-muted">© {year} {profile.name}</p>
+    <nav class="flex flex-wrap gap-5">
+      {
+        links.map((l) => (
+          <a
+            href={l.href}
+            {...l.ext ? { target: "_blank", rel: "noopener noreferrer" } : {}}
+            class="text-sm text-muted transition-colors hover:text-accent"
+          >
+            {l.label}
+          </a>
+        ))
+      }
+    </nav>
+  </div>
+</footer>
