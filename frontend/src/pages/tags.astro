@@ -1,0 +1,68 @@
+---
+import { TagMatcher, buildTagGroups, type MatchEntry } from "@gmocquet/ui";
+import { getCollection } from "astro:content";
+import Base from "../layouts/Base.astro";
+import { formatPeriod } from "../lib/content";
+
+const profile = (await getCollection("profile"))[0].data;
+const experiences = (await getCollection("experiences")).sort((a, b) => a.data.order - b.data.order);
+const projects = (await getCollection("projects")).sort((a, b) => a.data.order - b.data.order);
+
+// Tag catalog: curated skills + a merged "Tech stack" group from every experience/project stack.
+const allStacks = [
+  ...experiences.flatMap((e) => e.data.stack),
+  ...projects.flatMap((p) => p.data.stack),
+];
+const groups = buildTagGroups(profile.skills, allStacks);
+
+// Evidence entries: experiences (skip those without a stack) and projects, with deep links.
+const entries: MatchEntry[] = [
+  ...experiences
+    .filter((e) => e.data.stack.length > 0)
+    .map((e) => ({
+      kind: "experience" as const,
+      title: e.data.role,
+      subtitle: `${e.data.company} · ${formatPeriod(e.data.start, e.data.end)}`,
+      href: `/about#exp-${e.id}`,
+      tags: e.data.stack,
+    })),
+  ...projects.map((p) => ({
+    kind: "project" as const,
+    title: p.data.title,
+    subtitle: [p.data.company, p.data.period].filter(Boolean).join(" · ") || undefined,
+    href: `/projects/${p.id}`,
+    tags: p.data.stack,
+  })),
+];
+
+// Popular tags (by frequency across entries) for the empty-state quick picks.
+const freq = new Map<string, { label: string; n: number }>();
+for (const e of entries) {
+  for (const t of e.tags) {
+    const key = t.toLowerCase().trim();
+    const cur = freq.get(key);
+    if (cur) cur.n += 1;
+    else freq.set(key, { label: t, n: 1 });
+  }
+}
+const quickPicks = [...freq.values()]
+  .sort((a, b) => b.n - a.n)
+  .slice(0, 8)
+  .map((x) => x.label);
+---
+
+<Base
+  title="Tags — Guillaume Mocquet"
+  description="Select skills to check whether they're in my toolkit and see where I've applied them."
+>
+  <section class="mx-auto max-w-3xl px-6 pt-20 pb-24">
+    <h1 class="font-display text-4xl text-fg">Tags</h1>
+    <p class="mt-4 max-w-2xl text-muted">
+      Looking for specific skills? Select the ones you need — I'll show whether they're in my toolkit
+      and where I've applied them.
+    </p>
+    <div class="mt-10">
+      <TagMatcher client:load groups={groups} entries={entries} quickPicks={quickPicks} />
+    </div>
+  </section>
+</Base>

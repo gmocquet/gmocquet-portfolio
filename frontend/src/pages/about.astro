@@ -31,7 +31,13 @@ const experiences = (await getCollection("experiences")).sort(
   <section class="mx-auto max-w-5xl border-t border-border px-6 py-12">
     <h2 class="font-display text-2xl text-fg">Experience</h2>
     <div class="mt-10 space-y-10">
-      {experiences.map((e) => <ExperienceItem experience={toExperienceData(e.data)} />)}
+      {
+        experiences.map((e) => (
+          <div id={`exp-${e.id}`} class="scroll-mt-20">
+            <ExperienceItem experience={toExperienceData(e.data)} />
+          </div>
+        ))
+      }
     </div>
   </section>
 

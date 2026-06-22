@@ -11,6 +11,7 @@
     "build": "astro build",
     "preview": "astro preview",
     "check": "astro check",
+    "test": "vitest run",
     "format": "biome format --write .",
     "lint": "biome check .",
     "lint:fix": "biome check --write ."
@@ -35,6 +36,7 @@
     "@types/react-dom": "19.2.3",
     "tailwindcss": "4.3.1",
     "typescript": "6.0.3",
+    "vitest": "4.1.9",
     "wrangler": "4.103.0"
   }
 }
