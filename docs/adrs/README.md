@@ -13,6 +13,7 @@ with a new ADR rather than editing an old one. Format: Context → Decision → 
 - [0006 — Keep DNS at OVH; serve `www` via Pages, redirect the apex](0006-keep-ovh-dns-www-via-pages.md) — *superseded by 0007*
 - [0007 — Delegate DNS to Cloudflare; keep mail at OVH (records replicated)](0007-delegate-dns-to-cloudflare-mail-stays-ovh.md)
 - [0008 — Remote OpenTofu state in Cloudflare R2 (private, no passphrase)](0008-remote-state-cloudflare-r2.md)
+- [0009 — Application secrets in Infisical (single source of truth; .env generated, CI via OIDC)](0009-secrets-management-infisical.md)
 
 ## Adding an ADR
 
