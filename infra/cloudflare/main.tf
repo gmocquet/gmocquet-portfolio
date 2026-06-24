@@ -117,3 +117,10 @@ resource "cloudflare_dns_record" "srv" {
     target   = each.value.target
   }
 }
+
+# DNSSEC — enable signing on Cloudflare; the resulting DS record must be added at the OVH registrar
+# (Domain names → DNSSEC) to re-establish the chain of trust. See the `dnssec_*` outputs.
+resource "cloudflare_zone_dnssec" "site" {
+  zone_id = cloudflare_zone.site.id
+  status  = "active"
+}

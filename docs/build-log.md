@@ -83,7 +83,9 @@ A visual pass on the M3 site produced four refinements, delivered as focused PRs
   all mail records via `for_each`. Verified by querying Cloudflare's nameservers directly **before**
   switching: MX/SPF/DKIM/SRV all served correctly. Canonical is the apex (`www` also serves; canonical
   tag points to apex — no redirect rule).
-- **DNSSEC handled by ordering:** disable at OVH → wait ~24 h for the DS to expire → switch nameservers
-  → (optional) re-enable on Cloudflare. Zero email downtime.
+- **DNSSEC handled by ordering:** disabled at OVH → waited for the DS to expire (verified gone from the
+  registry and all major resolvers) → switched the nameservers. Zero email downtime; zone went active,
+  apex + www certs issued. Then **re-enabled DNSSEC on Cloudflare** (`cloudflare_zone_dnssec`) — the new
+  DS (key tag 2371, algo 13) is added back at the OVH registrar to re-form the chain of trust.
 - TF state committed to the (private, single-operator) repo as an interim — no credentials in it; remote
   backend is the planned hardening.
