@@ -21,6 +21,9 @@ github_ssh_ok()  {
   ssh -o BatchMode=yes -o StrictHostKeyChecking=accept-new -T git@github.com 2>&1 | grep -q "successfully authenticated"
 }
 anthropic_ok()   { [[ -n "${ANTHROPIC_API_KEY:-}" ]] || [[ -n "${CLAUDE_CODE_OAUTH_TOKEN:-}" ]] || has_cmd claude; }
+# Logged into Infisical (the secrets source of truth)? `</dev/null` stops the CLI from launching its
+# interactive login flow when no session exists, so the check fails fast instead of hanging.
+infisical_auth_ok() { has_cmd infisical && infisical user get token --silent </dev/null >/dev/null 2>&1; }
 
 # --- reporting --------------------------------------------------------------
 RC=0
@@ -36,6 +39,7 @@ main() {
   check_optional bats      "brew install bats-core — Bash unit tests"
   check_optional openspec  "brew install openspec — spec-driven workflow"
   check_optional tenv      "brew install tenv — Terraform/OpenTofu (later lots)"
+  check_optional infisical "brew install infisical/get-cli/infisical — secrets source of truth"
 
   printf '\n\033[1m%s\033[0m\n  %s\n' "Project dev tools (installed by 'make init', not global)" \
     "pre-commit → uv dev dep (each ecosystem); wrangler → npm devDependency (frontend)"
@@ -43,6 +47,7 @@ main() {
   section "Access"
   if github_ssh_ok; then ok "GitHub SSH authenticated"; else fail "GitHub SSH (REQUIRED — add your SSH key to GitHub)"; RC=1; fi
   if anthropic_ok; then ok "Anthropic auth available (OAuth session or ANTHROPIC_API_KEY)"; else fail "Anthropic auth (REQUIRED — login via OAuth or set ANTHROPIC_API_KEY in .env)"; RC=1; fi
+  if infisical_auth_ok; then ok "Infisical authenticated (secrets source of truth)"; else warn "Infisical not authenticated (needed for secrets — 'infisical login' + 'infisical init', then 'make secrets-pull')"; fi
 
   section "Result"
   if [[ $RC -eq 0 ]]; then ok "Environment is ready."; else fail "Some required checks failed — see above."; fi

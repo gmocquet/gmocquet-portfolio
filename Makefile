@@ -6,7 +6,7 @@
 SHELL := /bin/bash
 .ONESHELL:
 
-.PHONY: help doctor init dev build lint test i18n changelog deploy gh-bootstrap
+.PHONY: help doctor init dev build lint test i18n changelog secrets-pull deploy gh-bootstrap
 
 help: ## List available targets
 	@grep -hE '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN{FS=":.*?## "}{printf "  \033[1m%-14s\033[0m %s\n", $$1, $$2}'
@@ -34,6 +34,9 @@ i18n: ## Generate FR content from EN via the translation CLI
 
 changelog: ## (Re)generate CHANGELOG.md from Conventional Commits
 	@git cliff --output CHANGELOG.md
+
+secrets-pull: ## Regenerate the local .env from Infisical (the secrets source of truth)
+	@./scripts/secrets-pull.sh
 
 deploy: ## Build and deploy the frontend to Cloudflare Pages
 	@./scripts/deploy.sh
