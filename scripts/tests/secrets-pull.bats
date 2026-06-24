@@ -19,11 +19,11 @@ STUB
   export PATH="$REPO/bin:$PATH"
 }
 
-@test "pull_env exports the env in dotenv format to the given file" {
+@test "pull_env exports the given env in dotenv format to the given file" {
   source "$SCRIPT"   # main guard skipped when sourced; no cd, no pull
-  run pull_env prod "$REPO/out.env"
+  run pull_env dev "$REPO/out.env"
   [ "$status" -eq 0 ]
-  [ "$(cat "$ARGS_FILE")" = "export --env=prod --format=dotenv --output-file=$REPO/out.env --silent" ]
+  [ "$(cat "$ARGS_FILE")" = "export --env=dev --format=dotenv --output-file=$REPO/out.env --silent" ]
 }
 
 @test "running the script errors when .infisical.json is missing" {
@@ -32,10 +32,10 @@ STUB
   [[ "$output" == *".infisical.json not found"* ]]
 }
 
-@test "running the script writes .env from Infisical (default env=prod)" {
+@test "running the script writes .env from Infisical (default env=dev)" {
   : >"$REPO/.infisical.json"
   run bash "$SCRIPT"
   [ "$status" -eq 0 ]
   [ -f "$REPO/.env" ]
-  [[ "$(cat "$ARGS_FILE")" == *"--env=prod"* ]]
+  [[ "$(cat "$ARGS_FILE")" == *"--env=dev"* ]]
 }

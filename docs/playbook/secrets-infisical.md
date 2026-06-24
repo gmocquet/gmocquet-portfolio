@@ -17,8 +17,8 @@ private home and a reproducible way to fan them out — without paying or self-h
 
 ## 1. One-time bootstrap (dashboard + CLI)
 
-1. **Dashboard**: create a project (e.g. `<repo>-secrets`) and an environment `prod` (add `dev` only
-   if local values must differ). Paste each one-time secret into `prod`.
+1. **Dashboard**: create a project (e.g. `<repo>-secrets`) with two environments — `dev` (local work)
+   and `prod` (CI / deploy). Paste each one-time secret into the relevant environment.
 2. **Login**: `infisical login` (browser OAuth — nothing stored in the repo).
 3. **Link the repo**: `infisical init` at the repo root → writes `.infisical.json` (project id +
    default env, **no secret**). **Commit it** so the CLI targets the right project with no config.
@@ -32,7 +32,7 @@ Add a task that regenerates `.env` on demand (keep `.env` and `.env.*` gitignore
 
 ```bash
 # scripts/secrets-pull.sh  (pull_env isolated so it can be unit-tested with a stubbed CLI)
-: "${INFISICAL_ENV:=prod}"; : "${ENV_FILE:=.env}"
+: "${INFISICAL_ENV:=dev}"; : "${ENV_FILE:=.env}"   # local default = dev; CI overrides with prod
 pull_env() { infisical export --env="$1" --format=dotenv --output-file="$2" --silent; }
 ```
 

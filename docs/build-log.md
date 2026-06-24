@@ -109,13 +109,14 @@ A visual pass on the M3 site produced four refinements, delivered as focused PRs
 
 - Adopted **Infisical Cloud (free tier)** as the single source of truth for application secrets
   (Cloudflare token/account, R2 S3 keys, beacon token, optional Anthropic key) — project
-  `gmocquet-portfolio-secrets`, env `prod`. Chosen over Doppler (proprietary), Bitwarden (two
-  products) and HCP Vault Secrets (EOL 2026-07-01); open source → self-host escape hatch. See ADR 0009.
+  `gmocquet-portfolio-secrets`, envs `dev` (local) + `prod` (CI). Chosen over Doppler (proprietary),
+  Bitwarden (two products) and HCP Vault Secrets (EOL 2026-07-01); open source → self-host escape
+  hatch. See ADR 0009.
 - **Local**: `make secrets-pull` (`scripts/secrets-pull.sh`) regenerates the gitignored, ephemeral
-  `.env` via `infisical export`; direnv loads it as before — only the file's *source* moves to
-  Infisical. Repo linked via the committed `.infisical.json` (ids only, no secret). First Bash unit
-  tests land with this (`scripts/tests/*.bats`, stubbed CLI); `make doctor` gains an Infisical
-  presence/auth check.
+  `.env` from the `dev` env via `infisical export` (override `INFISICAL_ENV=prod`); direnv loads it
+  as before — only the file's *source* moves to Infisical. Repo linked via the committed
+  `.infisical.json` (ids only, no secret). First Bash unit tests land with this
+  (`scripts/tests/*.bats`, stubbed CLI); `make doctor` gains an Infisical presence/auth check.
 - **CI (follow-up PR)**: the deploy workflow fetches the same secrets at runtime via Infisical's
   GitHub Action over **OIDC** (`id-token: write`), dropping the long-lived `CLOUDFLARE_*` GitHub
   Secrets/Variables. No long-lived root credential anywhere (local = OAuth login, CI = OIDC).

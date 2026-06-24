@@ -116,18 +116,20 @@ directly over HTTPS while email is untouched. Three parts:
 ## Secrets
 
 Application secrets live in **Infisical** (free tier) as the **single source of truth** — project
-`gmocquet-portfolio-secrets`, environment `prod`. They are never committed; the local `.env` is
-**generated** from Infisical, never hand-written (`.env` / `.env.*` stay gitignored).
+`gmocquet-portfolio-secrets`, with two environments: **`dev`** (local) and **`prod`** (CI / deploy).
+They are never committed; the local `.env` is **generated** from Infisical, never hand-written
+(`.env` / `.env.*` stay gitignored).
 
 First-time setup: `infisical login`, then `infisical init` at the repo root (writes the committed
 `.infisical.json` — project id only, no secret). Day to day:
 
 ```bash
-make secrets-pull   # regenerate .env from Infisical (gitignored); direnv then loads it
+make secrets-pull                    # regenerate .env from the `dev` env (default); direnv loads it
+INFISICAL_ENV=prod make secrets-pull # override to pull the `prod` env locally if needed
 ```
 
-The same secrets feed CI: the deploy workflow migrates to fetching them at runtime via Infisical's
-GitHub Action over **OIDC** (no long-lived secrets in GitHub). See ADR 0009 and
+The same secrets feed CI: the deploy workflow migrates to fetching the **`prod`** secrets at runtime
+via Infisical's GitHub Action over **OIDC** (no long-lived secrets in GitHub). See ADR 0009 and
 `docs/playbook/secrets-infisical.md`.
 
 ## Governance

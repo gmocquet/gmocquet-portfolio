@@ -54,8 +54,8 @@ integrates.
   milestones, board, PRs) — see `scripts/github-bootstrap.sh`.
 - Anthropic auth defaults to **OAuth** (no AI credential in `.env`); an API key is an optional
   fallback loaded from `.env` (via `.envrc` / direnv).
-- **Secrets** live in **Infisical** (project `gmocquet-portfolio-secrets`, env `prod`) as the single
-  source of truth; generate the local `.env` with `make secrets-pull` (gitignored, loaded by direnv),
-  never hand-write or commit it. CI fetches the same secrets via OIDC. See ADR 0009 and
-  `docs/playbook/secrets-infisical.md`.
+- **Secrets** live in **Infisical** (project `gmocquet-portfolio-secrets`; envs `dev` for local,
+  `prod` for CI) as the single source of truth; generate the local `.env` with `make secrets-pull`
+  (pulls `dev` by default; gitignored, loaded by direnv), never hand-write or commit it. CI fetches
+  the `prod` secrets via OIDC. See ADR 0009 and `docs/playbook/secrets-infisical.md`.
 - Definition of Done: tests pass, docs/specs updated (incl. `README.md`), lint/format/hooks clean.

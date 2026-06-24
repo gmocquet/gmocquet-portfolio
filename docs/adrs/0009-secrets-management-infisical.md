@@ -23,17 +23,19 @@ environments, 10 native integrations, **unlimited secrets**; no secret versionin
 ## Decision
 
 **Infisical Cloud (free tier) is the single source of truth for all application secrets** — project
-`gmocquet-portfolio-secrets`, environment `prod`. Nothing else holds a master copy.
+`gmocquet-portfolio-secrets`, with two environments: **`dev`** (local work) and **`prod`** (CI /
+deploy). Nothing else holds a master copy.
 
 - **Repo link**: `infisical init` writes **`.infisical.json`** (project id + default environment,
   **no secret**) — committed, so `export`/`run` target the right project with no manual config.
 - **Local**: `make secrets-pull` → `scripts/secrets-pull.sh` runs
-  `infisical export --env=prod --format=dotenv --output-file=.env`. The `.env` is **generated,
-  gitignored and ephemeral** (regenerated on demand); direnv loads it exactly as before, so the
-  developer workflow is unchanged — only the file's *source* moves to Infisical.
-- **CI**: the official `Infisical/secrets-action` (SHA-pinned) fetches secrets at runtime via
-  **OIDC** (the job uses `id-token: write`); the long-lived `CLOUDFLARE_*` GitHub Secrets/Variables
-  are removed. No static secret is stored in GitHub.
+  `infisical export --env=dev --format=dotenv --output-file=.env` (local default `dev`; override with
+  `INFISICAL_ENV=prod`). The `.env` is **generated, gitignored and ephemeral** (regenerated on
+  demand); direnv loads it exactly as before, so the developer workflow is unchanged — only the
+  file's *source* moves to Infisical.
+- **CI**: the official `Infisical/secrets-action` (SHA-pinned) fetches the **`prod`** secrets at
+  runtime via **OIDC** (the job uses `id-token: write`); the long-lived `CLOUDFLARE_*` GitHub
+  Secrets/Variables are removed. No static secret is stored in GitHub.
 - **Auth model**: local = `infisical login` (browser OAuth, no stored secret); CI = OIDC (short-lived
   GitHub-issued token). There is therefore **no long-lived root credential to keep safe** — which is
   exactly what closes the "secret shown only once" problem.

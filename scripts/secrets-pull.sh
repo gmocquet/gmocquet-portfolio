@@ -3,9 +3,10 @@
 # Pulls one environment's secrets and writes them to .env (gitignored); direnv then loads it as before.
 # `pull_env` is the only side-effecting unit (the infisical call), kept isolated so bats can stub it.
 # Prerequisites: `infisical login` (once) + `infisical init` (creates .infisical.json, committed).
+# Defaults to the `dev` environment for local work; override with INFISICAL_ENV=prod (CI uses prod).
 set -euo pipefail
 
-: "${INFISICAL_ENV:=prod}"
+: "${INFISICAL_ENV:=dev}"
 : "${ENV_FILE:=.env}"
 
 # pull_env <environment> <output-file> — export the env's secrets from Infisical into a dotenv file.
