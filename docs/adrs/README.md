@@ -10,7 +10,8 @@ with a new ADR rather than editing an old one. Format: Context → Decision → 
 - [0003 — Content/presentation decoupling (YAML + Zod)](0003-content-presentation-decoupling.md)
 - [0004 — Makefile + scripts/ as the single task runner](0004-makefile-scripts-task-runner.md)
 - [0005 — IaC with OpenTofu; deploy via wrangler Direct Upload in CI](0005-iac-opentofu-cloudflare-deploy.md)
-- [0006 — Keep DNS at OVH; serve `www` via Pages, redirect the apex](0006-keep-ovh-dns-www-via-pages.md)
+- [0006 — Keep DNS at OVH; serve `www` via Pages, redirect the apex](0006-keep-ovh-dns-www-via-pages.md) — *superseded by 0007*
+- [0007 — Delegate DNS to Cloudflare; keep mail at OVH (records replicated)](0007-delegate-dns-to-cloudflare-mail-stays-ovh.md)
 
 ## Adding an ADR
 

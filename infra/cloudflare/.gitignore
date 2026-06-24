@@ -1,9 +1,13 @@
-# OpenTofu local state and caches — never committed (state can hold sensitive values).
+# OpenTofu provider cache — never committed (large binaries).
 .terraform/
-*.tfstate
-*.tfstate.*
 crash.log
+*.tfstate.backup
 
-# Real variable values — commit only the example.
+# NOTE: terraform.tfstate IS committed for now — this is a private, single-operator repo (see README
+# "State"). It contains no credentials (the provider token comes from the env), only the Cloudflare
+# account id. Move to a remote backend (Cloudflare R2 / HCP) before the repo goes public or gains
+# other operators.
+
+# Real variable values — commit only the example (account_id also lives in the committed state).
 *.tfvars
 !*.tfvars.example

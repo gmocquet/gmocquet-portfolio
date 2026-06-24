@@ -69,3 +69,23 @@ A visual pass on the M3 site produced four refinements, delivered as focused PRs
   (destroyed the zone/records); email and DNSSEC are left fully intact.
 - **Web Analytics deferred:** creating a RUM site needs an account-analytics *edit* scope Cloudflare
   doesn't expose to scoped tokens → provision it from the dashboard later; the in-code beacon stays.
+
+## 2026-06-22 — DNS migration to Cloudflare, mail kept at OVH (ADR 0007)
+
+- The Option-B apex redirect (ADR 0006) only worked in HTTP: **OVH doesn't support HTTPS on DNS-level
+  redirections** (their own answer: "never has, never will" — the only path is a paid hosting plan). And
+  DNS authority is indivisible — "web on Cloudflare, mail on OVH" as separate authorities is a paid
+  Cloudflare partial setup. So to serve `https://guillaumemocquet.com`, the zone must be on Cloudflare.
+- Key insight communicated to the user: **moving DNS ≠ moving mail.** Delegated the zone to Cloudflare
+  but **replicated every OVH mail record** (4× MX, SPF, 2× DKIM CNAME, 3× SRV, the `imap/smtp/…` service
+  CNAMEs) verbatim as DNS-only records — mailboxes and delivery stay 100% at OVH.
+- IaC re-expanded (`infra/cloudflare/`): zone + apex/www CNAMEs (proxied, flattening → HTTPS on both) +
+  all mail records via `for_each`. Verified by querying Cloudflare's nameservers directly **before**
+  switching: MX/SPF/DKIM/SRV all served correctly. Canonical is the apex (`www` also serves; canonical
+  tag points to apex — no redirect rule).
+- **DNSSEC handled by ordering:** disabled at OVH → waited for the DS to expire (verified gone from the
+  registry and all major resolvers) → switched the nameservers. Zero email downtime; zone went active,
+  apex + www certs issued. Then **re-enabled DNSSEC on Cloudflare** (`cloudflare_zone_dnssec`) — the new
+  DS (key tag 2371, algo 13) is added back at the OVH registrar to re-form the chain of trust.
+- TF state committed to the (private, single-operator) repo as an interim — no credentials in it; remote
+  backend is the planned hardening.
