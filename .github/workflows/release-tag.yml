@@ -25,9 +25,6 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Install git-cliff (pinned)
-        run: pipx install git-cliff==2.13.1
-
       - name: Compute next tag
         id: ver
         run: |
