@@ -1,13 +1,13 @@
 name: deploy
 
-# On every push to main (i.e. after a PR merge), build the static site and deploy it to Cloudflare
-# Pages via wrangler Direct Upload. CI and local use the SAME `make deploy` target (reproducibility).
-# Requires the CLOUDFLARE_API_TOKEN / CLOUDFLARE_ACCOUNT_ID secrets and the PUBLIC_CF_BEACON_TOKEN
-# variable. Skipped for [skip ci] commits (e.g. the changelog bot) to avoid redundant deploys.
+# Release-driven: on every `v*` release tag, build the static site and deploy it to Cloudflare Pages
+# via wrangler Direct Upload. CI and local use the SAME `make deploy` target (reproducibility).
+# Tags are created by the release-tag workflow (on push to main). Requires the CLOUDFLARE_API_TOKEN /
+# CLOUDFLARE_ACCOUNT_ID secrets and the PUBLIC_CF_BEACON_TOKEN variable.
 
 on:
   push:
-    branches: [main]
+    tags: ['v*']
   workflow_dispatch: {}
 
 permissions:
@@ -19,7 +19,6 @@ concurrency:
 
 jobs:
   deploy:
-    if: ${{ !contains(github.event.head_commit.message, '[skip ci]') }}
     runs-on: ubuntu-latest
     environment:
       name: production

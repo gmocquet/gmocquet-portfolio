@@ -3,6 +3,7 @@ name: release-tag
 # On every push to main (i.e. after a PR merge), compute the next semantic version from the
 # Conventional Commits since the last tag and create/push a vX.Y.Z tag. No-op if nothing releasable.
 # Skipped for bot commits carrying [skip ci] (e.g. the changelog commit) to avoid CI loops.
+# The tag is created and pushed with the default GITHUB_TOKEN.
 
 on:
   push:
