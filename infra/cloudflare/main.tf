@@ -1,25 +1,126 @@
 locals {
-  # Canonical Pages host — the CNAME target to set for `www` at OVH.
+  # Canonical Pages host the apex/www CNAMEs point to (CNAME flattening at the apex).
   pages_host = "${var.project_name}.pages.dev"
+
+  # Mail records replicated verbatim from OVH — the mailboxes stay at OVH; Cloudflare is only the DNS.
+  mx_records = {
+    mx0 = { priority = 1, content = "mx0.mail.ovh.net" }
+    mx1 = { priority = 5, content = "mx1.mail.ovh.net" }
+    mx2 = { priority = 50, content = "mx2.mail.ovh.net" }
+    mx3 = { priority = 100, content = "mx3.mail.ovh.net" }
+  }
+
+  # Mail/service CNAMEs — DNS-only (never proxied): they point at OVH's mail/ftp/DKIM infrastructure.
+  service_cnames = {
+    "autoconfig"                        = "mailconfig.ovh.net"
+    "ftp"                               = "ftp.cluster017.ovh.net"
+    "imap"                              = "ssl0.ovh.net"
+    "mail"                              = "ssl0.ovh.net"
+    "pop3"                              = "ssl0.ovh.net"
+    "smtp"                              = "ssl0.ovh.net"
+    "ovhmo2786047-selector1._domainkey" = "ovhmo2786047-selector1._domainkey.1710504.gs.dkim.mail.ovh.net"
+    "ovhmo2786047-selector2._domainkey" = "ovhmo2786047-selector2._domainkey.1710503.gs.dkim.mail.ovh.net"
+  }
+
+  # Mail-client autodiscovery (SRV) — priority/weight 0, as exported from OVH.
+  srv_records = {
+    autodiscover = { service = "_autodiscover._tcp", port = 443, target = "mailconfig.ovh.net" }
+    imaps        = { service = "_imaps._tcp", port = 993, target = "ssl0.ovh.net" }
+    submission   = { service = "_submission._tcp", port = 465, target = "ssl0.ovh.net" }
+  }
 }
 
-# Pages project (Direct Upload — assets are pushed by wrangler from CI, no Git source here).
+# DNS zone — Cloudflare becomes authoritative once OVH delegates the nameservers (see README).
+resource "cloudflare_zone" "site" {
+  account = { id = var.account_id }
+  name    = var.domain
+  type    = "full"
+}
+
+# Pages project (Direct Upload — assets are pushed by wrangler from CI).
 resource "cloudflare_pages_project" "site" {
   account_id        = var.account_id
   name              = var.project_name
   production_branch = var.production_branch
 }
 
-# Custom domain: `www` is served by Pages. DNS stays authoritative at OVH — a `www` CNAME to the
-# Pages host (created at OVH) validates this domain. The apex redirects to `www` at OVH. We do NOT
-# delegate the zone to Cloudflare, so email (MX/SPF) and DNSSEC are left untouched at OVH.
+# --- Website: apex + www served by Pages, HTTPS via CNAME flattening (proxied) ---
+resource "cloudflare_pages_domain" "apex" {
+  account_id   = var.account_id
+  project_name = cloudflare_pages_project.site.name
+  name         = var.domain
+}
+
 resource "cloudflare_pages_domain" "www" {
   account_id   = var.account_id
   project_name = cloudflare_pages_project.site.name
   name         = "www.${var.domain}"
 }
 
-# NOTE: Cloudflare Web Analytics (RUM) is intentionally not managed here. Creating a RUM site needs an
-# account-analytics *edit* scope that Cloudflare does not expose to scoped API tokens (read-only only).
-# The cookieless beacon stays in-code (Base.astro, gated by PUBLIC_CF_BEACON_TOKEN); provision the WA
-# site once from the dashboard, then set PUBLIC_CF_BEACON_TOKEN to its token.
+resource "cloudflare_dns_record" "apex" {
+  zone_id = cloudflare_zone.site.id
+  name    = var.domain
+  type    = "CNAME"
+  content = local.pages_host
+  proxied = true
+  ttl     = 1
+}
+
+resource "cloudflare_dns_record" "www" {
+  zone_id = cloudflare_zone.site.id
+  name    = "www.${var.domain}"
+  type    = "CNAME"
+  content = local.pages_host
+  proxied = true
+  ttl     = 1
+}
+
+# --- Email (replicated from OVH; mailboxes and delivery stay at OVH) ---
+resource "cloudflare_dns_record" "mx" {
+  for_each = local.mx_records
+  zone_id  = cloudflare_zone.site.id
+  name     = var.domain
+  type     = "MX"
+  content  = each.value.content
+  priority = each.value.priority
+  ttl      = 3600
+}
+
+resource "cloudflare_dns_record" "spf" {
+  zone_id = cloudflare_zone.site.id
+  name    = var.domain
+  type    = "TXT"
+  content = "v=spf1 include:mx.ovh.com ~all"
+  ttl     = 600
+}
+
+resource "cloudflare_dns_record" "service_cname" {
+  for_each = local.service_cnames
+  zone_id  = cloudflare_zone.site.id
+  name     = "${each.key}.${var.domain}"
+  type     = "CNAME"
+  content  = each.value
+  proxied  = false
+  ttl      = 3600
+}
+
+resource "cloudflare_dns_record" "srv" {
+  for_each = local.srv_records
+  zone_id  = cloudflare_zone.site.id
+  name     = "${each.value.service}.${var.domain}"
+  type     = "SRV"
+  ttl      = 3600
+  data = {
+    priority = 0
+    weight   = 0
+    port     = each.value.port
+    target   = each.value.target
+  }
+}
+
+# DNSSEC — enable signing on Cloudflare; the resulting DS record must be added at the OVH registrar
+# (Domain names → DNSSEC) to re-establish the chain of trust. See the `dnssec_*` outputs.
+resource "cloudflare_zone_dnssec" "site" {
+  zone_id = cloudflare_zone.site.id
+  status  = "active"
+}
