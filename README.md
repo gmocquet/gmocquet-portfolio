@@ -128,6 +128,16 @@ make secrets-pull                    # regenerate .env from the `dev` env (defau
 INFISICAL_ENV=prod make secrets-pull # override to pull the `prod` env locally if needed
 ```
 
+Expected variables (stored in Infisical, generated into `.env` — there is no committed `.env.example`):
+
+| Variable | Purpose |
+|----------|---------|
+| `CLOUDFLARE_API_TOKEN` | Cloudflare deploy (wrangler) + OpenTofu infra |
+| `CLOUDFLARE_ACCOUNT_ID` | Cloudflare account id |
+| `AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY` | R2 S3 keys for the OpenTofu state backend (ADR 0008) |
+| `PUBLIC_CF_BEACON_TOKEN` | Cloudflare Web Analytics beacon (public, build-time; not a secret) |
+| `ANTHROPIC_API_KEY` | optional fallback for the i18n CLI (OAuth is the default) |
+
 The same secrets feed CI: the deploy workflow migrates to fetching the **`prod`** secrets at runtime
 via Infisical's GitHub Action over **OIDC** (no long-lived secrets in GitHub). See ADR 0009 and
 `docs/playbook/secrets-infisical.md`.
