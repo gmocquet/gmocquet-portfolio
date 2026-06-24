@@ -73,6 +73,7 @@ Global tooling for macOS — install [Homebrew](https://brew.sh) first, then eac
 | **bats-core** | Bash unit tests | `brew install bats-core` |
 | **openspec** | spec-driven workflow CLI | `brew install openspec` |
 | **tenv** | Terraform/OpenTofu version manager (later lots) | `brew install tenv` |
+| **git-filter-repo** | git history rewrites (e.g. purge a committed file from history) | `brew install git-filter-repo` |
 
 **Project dev tools are NOT global** — they are pinned dev dependencies installed by `make init`:
 
