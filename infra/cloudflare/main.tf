@@ -90,7 +90,7 @@ resource "cloudflare_dns_record" "spf" {
   zone_id = cloudflare_zone.site.id
   name    = var.domain
   type    = "TXT"
-  content = "v=spf1 include:mx.ovh.com ~all"
+  content = "v=spf1 include:mx.ovh.com -all"
   ttl     = 600
 }
 

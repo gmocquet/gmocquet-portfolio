@@ -146,3 +146,14 @@ A visual pass on the M3 site produced four refinements, delivered as focused PRs
   (`infra/cloudflare/main.tf`) — **config-only, no DNS write**. `tofu plan` now reports **No changes**,
   so routine plans/applies no longer need `-target` to dodge this noise. Functionally a no-op (the SRV
   records were always correct); it just reconciles the IaC with what the provider reports.
+
+## 2026-06-25 — Harden SPF to hardfail (`-all`)
+
+- Tightened the SPF record from softfail to **hardfail**: `v=spf1 include:mx.ovh.com ~all` →
+  `… -all` (`cloudflare_dns_record.spf`). Unauthorized senders (anything not OVH) are now declared as
+  forgeries to be **rejected**, not merely flagged.
+- DMARC (`p=quarantine`) already does the heavy lifting via alignment; `-all` is defense in depth and
+  the unambiguous posture. Done **before** the ~2-week DMARC-report window as a deliberate call — OVH is
+  the sole sender for this personal domain. Trivially reversible (`-all` → `~all` + apply) if a report
+  ever surfaces a legitimate non-OVH sender.
+- Unlike the SRV fix, this is a real DNS change → applied (`tofu apply`) and verified live with `dig`.
