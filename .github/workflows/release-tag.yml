@@ -28,20 +28,17 @@ jobs:
       - name: Install git-cliff (pinned)
         run: pipx install git-cliff==2.13.1
 
-      - name: Compute next version
+      - name: Compute next tag
         id: ver
         run: |
-          next="$(git cliff --bumped-version 2>/dev/null || true)"
-          [[ "$next" == v* || -z "$next" ]] || next="v$next"
-          last="$(git describe --tags --abbrev=0 2>/dev/null || echo '')"
-          echo "next=$next" >> "$GITHUB_OUTPUT"
-          echo "last=$last" >> "$GITHUB_OUTPUT"
-          echo "Computed next=$next (last=$last)"
+          tag="$(./scripts/next-release-tag.sh)"
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          echo "Computed tag=${tag:-<none>}"
 
       - name: Create and push tag
-        if: ${{ steps.ver.outputs.next != '' && steps.ver.outputs.next != steps.ver.outputs.last }}
+        if: ${{ steps.ver.outputs.tag != '' }}
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git tag -a "${{ steps.ver.outputs.next }}" -m "Release ${{ steps.ver.outputs.next }}"
-          git push origin "${{ steps.ver.outputs.next }}"
+          git tag -a "${{ steps.ver.outputs.tag }}" -m "Release ${{ steps.ver.outputs.tag }}"
+          git push origin "${{ steps.ver.outputs.tag }}"
