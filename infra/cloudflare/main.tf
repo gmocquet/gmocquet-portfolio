@@ -94,6 +94,17 @@ resource "cloudflare_dns_record" "spf" {
   ttl     = 600
 }
 
+# DMARC — authored here (NOT replicated from OVH). Enforcement at quarantine; aggregate reports go to
+# postmaster@ (same domain, so no _report._dmarc cross-domain authorization is needed). OVH DKIM is
+# domain-aligned, so legitimate OVH mail passes DMARC. See README "State"/mail section.
+resource "cloudflare_dns_record" "dmarc" {
+  zone_id = cloudflare_zone.site.id
+  name    = "_dmarc.${var.domain}"
+  type    = "TXT"
+  content = "v=DMARC1; p=quarantine; rua=mailto:postmaster@${var.domain}; adkim=r; aspf=r; pct=100; sp=quarantine"
+  ttl     = 3600
+}
+
 resource "cloudflare_dns_record" "service_cname" {
   for_each = local.service_cnames
   zone_id  = cloudflare_zone.site.id
