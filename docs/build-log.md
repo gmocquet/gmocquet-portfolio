@@ -135,3 +135,14 @@ A visual pass on the M3 site produced four refinements, delivered as focused PRs
 - **CI (follow-up PR)**: the deploy workflow fetches the same secrets at runtime via Infisical's
   GitHub Action over **OIDC** (`id-token: write`), dropping the long-lived `CLOUDFLARE_*` GitHub
   Secrets/Variables. No long-lived root credential anywhere (local = OAuth login, CI = OIDC).
+
+## 2026-06-25 — Silence the perpetual SRV priority drift
+
+- Since the PR #14 apply, every `tofu plan` showed `priority = 0 -> null` on the 3 `_tcp` SRV records:
+  the Cloudflare API returns a **top-level `priority = 0`** for SRV (the real priority lives in `data`,
+  already `0`), and our config never sets the top-level field — so it read back as a permanent diff that
+  an apply couldn't settle (the API re-returns `0` on each refresh).
+- Fixed with `lifecycle { ignore_changes = [priority] }` on `cloudflare_dns_record.srv`
+  (`infra/cloudflare/main.tf`) — **config-only, no DNS write**. `tofu plan` now reports **No changes**,
+  so routine plans/applies no longer need `-target` to dodge this noise. Functionally a no-op (the SRV
+  records were always correct); it just reconciles the IaC with what the provider reports.

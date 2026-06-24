@@ -127,6 +127,13 @@ resource "cloudflare_dns_record" "srv" {
     port     = each.value.port
     target   = each.value.target
   }
+
+  # The Cloudflare API returns a top-level `priority = 0` for SRV records (the real priority lives in
+  # `data`, set above). We never set the top-level field, so it reads back as a perpetual `0 -> null`
+  # diff on every plan — ignore that provider artifact (does not affect `data.priority`).
+  lifecycle {
+    ignore_changes = [priority]
+  }
 }
 
 # DNSSEC — enable signing on Cloudflare; the resulting DS record must be added at the OVH registrar
