@@ -89,3 +89,18 @@ A visual pass on the M3 site produced four refinements, delivered as focused PRs
   DS (key tag 2371, algo 13) is added back at the OVH registrar to re-form the chain of trust.
 - TF state committed to the (private, single-operator) repo as an interim — no credentials in it; remote
   backend is the planned hardening.
+
+## 2026-06-24 — Secure the OpenTofu state in Cloudflare R2
+
+- Moved `infra/cloudflare/terraform.tfstate` out of git into a **private Cloudflare R2 bucket**
+  (`gmocquet-portfolio-tfstate`) via the OpenTofu `s3` backend (`backend.tf`): `region = "auto"`, the
+  account R2 S3 endpoint, `use_path_style`, `use_lockfile`, and the AWS-only preflight skips R2 needs.
+  Same vendor as the infra, permanent free tier; **no passphrase** (recoverability > zero-trust — the
+  state holds no secrets, only resource IDs + public DNS records). See ADR 0008.
+- `tofu init -migrate-state` copied the local state to R2 losslessly; `tofu state list` reads the 23
+  resources from R2 and `use_lockfile` works. Removed the state from the working tree and re-ignored
+  `*.tfstate`; the historical blob is removed from git history in a follow-up rewrite (out of PR — a
+  history rewrite can't go through one).
+- Flagged for a separate `fix(infra)`: a pre-existing SRV-record drift (`priority = 0 -> null` on the 3
+  `_tcp` SRV records) surfaced by `tofu plan` — a Cloudflare provider v5 normalization, independent of
+  the state move.
