@@ -104,3 +104,18 @@ A visual pass on the M3 site produced four refinements, delivered as focused PRs
 - Flagged for a separate `fix(infra)`: a pre-existing SRV-record drift (`priority = 0 -> null` on the 3
   `_tcp` SRV records) surfaced by `tofu plan` — a Cloudflare provider v5 normalization, independent of
   the state move.
+
+## 2026-06-25 — Email authentication: publish DMARC (p=quarantine)
+
+- A DNS audit of `guillaumemocquet.com` came back healthy except for **one gap: no DMARC record**
+  (the domain was spoofable, with zero reporting visibility). MX/SPF/DKIM/SRV, DNSSEC (`ad` validated)
+  and HTTPS on apex + www were all green.
+- Added `cloudflare_dns_record.dmarc` (`infra/cloudflare/main.tf`) — `_dmarc` TXT, **authored here**
+  (not replicated from OVH): `v=DMARC1; p=quarantine; rua=mailto:postmaster@…; adkim=r; aspf=r;
+  pct=100; sp=quarantine`. OVH's DKIM is domain-aligned, so legitimate mail passes — enforcement is
+  low-risk. `rua` is same-domain (`postmaster@`), so no `_report._dmarc` cross-domain authorization is
+  needed.
+- Applied in isolation with `tofu apply -target=cloudflare_dns_record.dmarc` to avoid pulling the
+  pre-existing SRV drift into this change (still parked for its own `fix(infra)`).
+- Parked follow-ups: SPF `~all` → `-all`; ramp DMARC `quarantine` → `reject` after clean `rua` reports;
+  BIMI only with a VMC (not worth it for a portfolio).
