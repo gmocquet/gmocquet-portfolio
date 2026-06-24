@@ -1,13 +1,12 @@
 # OpenTofu provider cache — never committed (large binaries).
 .terraform/
 crash.log
+
+# State lives in a remote backend (Cloudflare R2 — see backend.tf / ADR 0008), never in git.
+# Ignore any local copy an init/migrate/pull may leave behind.
+*.tfstate
 *.tfstate.backup
 
-# NOTE: terraform.tfstate IS committed for now — this is a private, single-operator repo (see README
-# "State"). It contains no credentials (the provider token comes from the env), only the Cloudflare
-# account id. Move to a remote backend (Cloudflare R2 / HCP) before the repo goes public or gains
-# other operators.
-
-# Real variable values — commit only the example (account_id also lives in the committed state).
+# Real variable values — commit only the example.
 *.tfvars
 !*.tfvars.example

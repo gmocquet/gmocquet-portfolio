@@ -46,11 +46,22 @@ Output: `nameservers` — set these at OVH to delegate DNS to Cloudflare.
 
 ## State
 
-`terraform.tfstate` **is committed** to this repo for now — it is a **private, single-operator** repo and
-the state holds **no credentials** (the provider token comes from the environment), only the Cloudflare
-account id. **Before the repo goes public or gains other operators, move to a remote backend**
-(Cloudflare R2 S3-compatible bucket or HCP Terraform). Any change applied here must be committed so the
-state stays the source of truth.
+The state is stored **remotely in a private Cloudflare R2 bucket** (`gmocquet-portfolio-tfstate`, object
+`cloudflare/terraform.tfstate`) via the `s3` backend in `backend.tf` — out of git (see ADR 0008). It holds
+**no credentials** (the provider token comes from the environment), only Cloudflare resource IDs and public
+DNS records; it is kept private and unencrypted by choice (recoverability > zero-trust).
+
+**Credentials** — the backend reads the standard AWS env vars `AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY`,
+set to an **R2 API token** (R2 → *Manage R2 API Tokens* → Object Read & Write, scoped to the bucket). Put
+them in `.env` (gitignored, direnv) — never commit them.
+
+**Init / migrate** — `direnv exec . tofu -chdir=infra/cloudflare init` (first time from a local state, add
+`-migrate-state`). Verify with `tofu state list` (reads from R2).
+
+**Recovery** — R2 is durable and the bucket is private, but R2 has **no object versioning**: before any
+risky change, keep an off-git copy with `tofu state pull > tfstate-backup-<date>.json`. Last resort, the
+infra is fully reconstructable — re-`import` the live Cloudflare resources into a fresh state (the `.tf`
+files are the source of truth).
 
 ## Web Analytics
 
