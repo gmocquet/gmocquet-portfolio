@@ -1,14 +1,18 @@
 # Cloudflare infrastructure (OpenTofu)
 
 Declares the Cloudflare resources behind the public site: the DNS **zone**, the **Pages** project, its
-custom **domains** (apex + `www`), the website **DNS records** (apex + www → Pages), and the **mail
-DNS records replicated from OVH**. OpenTofu version is pinned via `.opentofu-version` (tenv); the
-provider is pinned in `versions.tf` with `.terraform.lock.hcl` committed.
+custom **domains** (apex + `www`), the website **DNS records** (apex + www → Pages), the **mail
+DNS records replicated from OVH**, and a **DMARC policy** record authored here. OpenTofu version is
+pinned via `.opentofu-version` (tenv); the provider is pinned in `versions.tf` with
+`.terraform.lock.hcl` committed.
 
 > **DNS is delegated to Cloudflare; mail stays at OVH** (see ADR 0007). The apex + `www` are served
 > directly over HTTPS by Pages (CNAME flattening). The OVH `MX`/`SPF`/`DKIM`/`SRV`/mail-service records
 > are replicated here verbatim (DNS-only, never proxied) so mail delivery and mailboxes are unchanged —
-> Cloudflare is only the DNS. Static assets are pushed to Pages by `wrangler` (`scripts/deploy.sh`).
+> Cloudflare is only the DNS. **DMARC** (`_dmarc`) is the exception: it is **authored here** (not from
+> OVH) at `p=quarantine`, with aggregate reports (`rua`) sent to `postmaster@guillaumemocquet.com`
+> (same domain → no cross-domain authorization record needed); OVH's domain-aligned DKIM lets
+> legitimate mail pass. Static assets are pushed to Pages by `wrangler` (`scripts/deploy.sh`).
 
 ## Prerequisites
 
