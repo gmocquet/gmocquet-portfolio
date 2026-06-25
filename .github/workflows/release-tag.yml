@@ -1,10 +1,8 @@
 name: release-tag
 
-# On every push to main (i.e. after a PR merge), compute the next semantic version from the
-# Conventional Commits since the last tag and create/push a vX.Y.Z tag. No-op if nothing releasable.
-# Skipped for bot commits carrying [skip ci] (e.g. the changelog commit) to avoid CI loops.
-# The tag is created via the GitHub REST API (POST /git/refs) with the default GITHUB_TOKEN — the
-# same mechanism as anothrNick/github-tag-action — to test whether that triggers the deploy workflow.
+# TEST: create the tag with anothrNick/github-tag-action using the default secrets.GITHUB_TOKEN, to
+# observe whether the resulting tag triggers the deploy workflow (on: push: tags). Configured to match
+# the current workflow (v prefix, patch default). The script logic stays in scripts/next-release-tag.sh.
 
 on:
   push:
@@ -28,18 +26,10 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Compute next tag
-        id: ver
-        run: |
-          tag="$(./scripts/next-release-tag.sh)"
-          echo "tag=$tag" >> "$GITHUB_OUTPUT"
-          echo "Computed tag=${tag:-<none>}"
-
-      - name: Create tag via the GitHub API (replicates github-tag-action)
-        if: ${{ steps.ver.outputs.tag != '' }}
+      - name: Bump version and push tag
+        uses: anothrNick/github-tag-action@4ed44965e0db8dab2b466a16da04aec3cc312fd8 # v1.75.0
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          gh api -X POST "repos/${GITHUB_REPOSITORY}/git/refs" \
-            -f ref="refs/tags/${{ steps.ver.outputs.tag }}" \
-            -f sha="${GITHUB_SHA}"
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          WITH_V: true
+          DEFAULT_BUMP: patch
+          RELEASE_BRANCHES: main
