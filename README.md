@@ -108,10 +108,11 @@ directly over HTTPS while email is untouched. Three parts:
   `infra/cloudflare/README.md` for the apply + DNSSEC-safe migration runbook and token scopes.
 - **Registrar (OVH)** — delegate the nameservers OVH → Cloudflare (after disabling DNSSEC and waiting for
   the DS to expire — see the runbook). Mailboxes stay at OVH.
-- **Continuous deploy** — `.github/workflows/deploy.yml` runs `make deploy` (build + `wrangler` Direct
-  Upload) on every push to `main`. It needs the `CLOUDFLARE_API_TOKEN` / `CLOUDFLARE_ACCOUNT_ID`
-  secrets and the optional `PUBLIC_CF_BEACON_TOKEN` variable (cookieless analytics beacon).
-  `make deploy` also works locally (the secrets come from your generated `.env` — see **Secrets**).
+- **Release-driven deploy** — `.github/workflows/deploy.yml` runs `make deploy` (build + `wrangler`
+  Direct Upload) on every **`v*` release tag** (tags are created by `release-tag.yml` from
+  Conventional Commits). It needs the `CLOUDFLARE_API_TOKEN` / `CLOUDFLARE_ACCOUNT_ID` secrets and
+  the optional `PUBLIC_CF_BEACON_TOKEN` variable (cookieless analytics beacon). `make deploy` also
+  works locally (the secrets come from your generated `.env` — see **Secrets**).
 
 ## Secrets
 

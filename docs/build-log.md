@@ -157,3 +157,9 @@ A visual pass on the M3 site produced four refinements, delivered as focused PRs
   the sole sender for this personal domain. Trivially reversible (`-all` → `~all` + apply) if a report
   ever surfaces a legitimate non-OVH sender.
 - Unlike the SRV fix, this is a real DNS change → applied (`tofu apply`) and verified live with `dig`.
+
+## 2026-06-25 — Release-driven deploy (deploy on `v*` tags)
+
+- Moved `deploy` from "on every push to `main`" to **on every `v*` release tag** — deploys now map to
+  the semantic version produced by `release-tag` (bootstrap `v0.0.1`; patch by default, minor on
+  `feat`, major on breaking). `release-tag` keeps creating the tag with the default `GITHUB_TOKEN`.
