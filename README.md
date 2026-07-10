@@ -149,8 +149,9 @@ via Infisical's GitHub Action over **OIDC** (no long-lived secrets in GitHub). S
 **One exception** — the `release-tag` workflow needs a **`GH_PAT_TOKEN`** fine-grained PAT
 (Contents:write, this repo only) to push `v*` tags so `deploy` triggers; there is no OIDC path to
 push git tags as a user. It lives as a **GitHub Actions secret**, not in Infisical, and is
-provisioned/rotated reproducibly with `make repo-settings-gh-pat-token-set` (and `-status` /
-`-delete`). See ADR 0010.
+provisioned/rotated reproducibly with `make repo-settings-gh-pat-token-set` — which **verifies the
+token can create tags before storing it** (fail-fast on a mis-scoped PAT); `-status` / `-delete`
+check and remove it. See ADR 0010.
 
 ## Governance
 

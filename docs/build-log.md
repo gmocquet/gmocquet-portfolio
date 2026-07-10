@@ -178,3 +178,9 @@ A visual pass on the M3 site produced four refinements, delivered as focused PRs
   stores the token via `gh secret set`; `-status` / `-delete` manage it. The PAT lives as a GitHub
   Actions secret — a documented, narrow exception to the Infisical source-of-truth (ADR 0009), since
   there is no OIDC path to push git tags as a user. See ADR 0010.
+- Follow-up: the first PAT was scoped to the wrong repository, so `release-tag` still 404'd on
+  `POST git/refs` (a private repo masks the 403 as 404) and `v0.0.9` was never created. Hardened the
+  tooling so this fails fast instead of silently: `-set` now **verifies the token can create a tag
+  before storing it** (creates + deletes a throwaway non-`v*` ref — the exact call the workflow makes
+  — so no workflow is triggered), and `-status` re-runs that probe on a token passed via
+  `GH_PAT_TOKEN` (a stored Actions secret is write-only, so its rights can't be read back).

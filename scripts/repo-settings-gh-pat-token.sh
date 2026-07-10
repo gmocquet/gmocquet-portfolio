@@ -48,32 +48,68 @@ open_url() {
   else echo "Open this URL: $1"; fi
 }
 
-# cmd_set <owner> <repo> — guide the PAT creation, then store the pasted token as the Actions secret.
+# probe_tag_write <repo> <token> — return 0 iff <token> can create a tag ref on <repo>, exercised
+# exactly as the release workflow does (POST git/refs, the call that 404'd with a mis-scoped PAT).
+# Creates then deletes a throwaway NON-`v*` tag, so it triggers no workflow (deploy/changelog watch
+# `v*`) and leaves no trace. This is the real proof of Contents:write — a stored Actions secret is
+# write-only and cannot be read back to inspect its scopes.
+probe_tag_write() {
+  local repo="$1" token="$2" name="gh-pat-token-permcheck-$$-${RANDOM}" sha
+  sha="$(GH_TOKEN="$token" gh api "repos/$repo/commits/HEAD" --jq '.sha' 2>/dev/null)" || return 1
+  GH_TOKEN="$token" gh api -X POST "repos/$repo/git/refs" \
+    -f ref="refs/tags/$name" -f sha="$sha" >/dev/null 2>&1 || return 1
+  GH_TOKEN="$token" gh api -X DELETE "repos/$repo/git/refs/tags/$name" >/dev/null 2>&1 || true
+  return 0
+}
+
+# cmd_set <owner> <repo> — guide the PAT creation, verify it can create tags, then store it. Refuses
+# to store a token that lacks Contents:write (fail-fast — the exact mistake that broke the release).
 cmd_set() {
-  local owner="$1" repo="$2" name="${2##*/}"
+  local owner="$1" repo="$2" name="${2##*/}" token
   echo "==> $SECRET_NAME — fine-grained PAT so CI can push v* release tags that trigger deploy."
   echo "    Scope: Contents read/write on $repo only. Stored as a GitHub Actions secret."
   echo ""
-  echo "Opening the pre-filled PAT page (name, description, expiry and Contents: Read and write are"
-  echo "set). GitHub cannot pre-select the repository, so you still need to:"
+  echo "Opening the pre-filled PAT page (name, description, No expiration and Contents: Read and write"
+  echo "are set). GitHub cannot pre-select the repository, so you still need to:"
   echo "  - set Repository access -> Only select repositories -> $repo"
   echo "  - click Generate token, then copy it."
   echo ""
   open_url "$(pat_url "$owner" "$name")"
-  printf "Press Enter once the token is generated and copied... "; read -r _
-  echo "Paste the token when prompted:"
-  gh secret set "$SECRET_NAME" --repo "$repo"
-  echo ""
-  echo "==> stored $SECRET_NAME on $repo. Verify with: make repo-settings-gh-pat-token-status"
+  printf "Paste the token, then press Enter: "; read -rs token || true; echo
+  [[ -n "$token" ]] || { echo "no token entered — aborting." >&2; return 1; }
+  echo "==> verifying the token can create tags on $repo (create + delete a throwaway tag)..."
+  if ! probe_tag_write "$repo" "$token"; then
+    echo "ERROR: this token cannot create a tag on $repo — NOT stored." >&2
+    echo "  Fix the PAT and re-run: Resource owner -> $owner; Repository access -> Only select" >&2
+    echo "  repositories -> $repo; Permissions -> Contents: Read and write." >&2
+    return 1
+  fi
+  printf '%s' "$token" | gh secret set "$SECRET_NAME" --repo "$repo"
+  echo "==> $SECRET_NAME stored and verified — can create tags on $repo."
 }
 
-# cmd_status <repo> — report whether the Actions secret exists.
+# cmd_status <repo> — report whether the Actions secret exists and, when a token is supplied in the
+# environment (GH_PAT_TOKEN), verify it actually has Contents:write. The stored secret's value is
+# write-only, so its rights cannot be checked from here without the token in hand.
 cmd_status() {
   local repo="$1"
   if gh secret list --repo "$repo" | grep -q "^${SECRET_NAME}[[:space:]]"; then
     echo "$SECRET_NAME: set on $repo"
   else
     echo "$SECRET_NAME: not set on $repo"
+    return 0
+  fi
+  if [[ -n "${GH_PAT_TOKEN:-}" ]]; then
+    if probe_tag_write "$repo" "$GH_PAT_TOKEN"; then
+      echo "$SECRET_NAME: rights OK — the supplied token can create tags on $repo"
+    else
+      echo "$SECRET_NAME: rights INSUFFICIENT — the supplied token cannot create tags on $repo" >&2
+      echo "  Fix: Repository access -> Only select repositories -> $repo; Contents: Read and write." >&2
+      return 1
+    fi
+  else
+    echo "  rights not checked: Actions secrets are write-only. \`set\` verifies at store time; or run"
+    echo "  \`GH_PAT_TOKEN=<token> make repo-settings-gh-pat-token-status\` to probe a token now."
   fi
 }
 

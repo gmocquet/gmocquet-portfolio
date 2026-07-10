@@ -33,9 +33,14 @@ Options weighed to make the tag push trigger `deploy`:
 - **Stored as a GitHub Actions secret** (not Infisical), managed reproducibly by
   `make repo-settings-gh-pat-token-{set,status,delete}` → `scripts/repo-settings-gh-pat-token.sh`.
   `-set` opens the **pre-filled** fine-grained-PAT page (name, description, expiry, Contents:write —
-  the user only picks the repository, which GitHub cannot pre-select) and stores the pasted token via
-  `gh secret set`. The tooling is ported from `gmocquet/neo` (`repo-settings-token-*`), renamed and
-  adapted to this repo's conventions (Makefile one-liners → `scripts/`, bats-tested).
+  the user only picks the repository, which GitHub cannot pre-select), then **verifies the token can
+  actually create a tag before storing it**: it creates and deletes a throwaway **non-`v*`** ref via
+  the same `POST git/refs` the workflow uses (the call that 404'd with a mis-scoped PAT), and refuses
+  a token that fails — turning the earlier silent failure into fail-fast. A stored Actions secret is
+  **write-only**, so this is the only place its rights can be checked with the token in hand; `-status`
+  re-runs the same probe on a token passed via `GH_PAT_TOKEN`, otherwise it only confirms presence.
+  The tooling is ported from `gmocquet/neo` (`repo-settings-token-*`), renamed and adapted to this
+  repo's conventions (Makefile one-liners → `scripts/`, bats-tested).
 
 **Documented exception to ADR 0009** ("no static secret stored in GitHub"; CI secrets via OIDC):
 there is **no OIDC path to authenticate a git tag push as a user**. This PAT is a GitHub-native
