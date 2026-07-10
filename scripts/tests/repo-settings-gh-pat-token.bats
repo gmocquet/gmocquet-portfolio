@@ -21,7 +21,7 @@ fi
 case "$1 $2" in
   "secret list")   printf '%s\n' "${STUB_SECRET_LIST:-}" ;;
   "secret set")    echo "set $3 --repo ${5:-}" >>"$STUB_CALLS" ;;
-  "secret delete") echo "delete $3 --repo ${5:-}" >>"$STUB_CALLS" ;;
+  "secret delete") [[ "${STUB_DELETE_FAIL:-}" == 1 ]] && exit 1; echo "delete $3 --repo ${5:-}" >>"$STUB_CALLS" ;;
 esac
 STUB_EOF
   chmod +x "$STUB/gh"
@@ -39,7 +39,7 @@ STUB_EOF
   run bash -c 'source "$1"; pat_url gmocquet gmocquet-portfolio' _ "$SCRIPT"
   [ "$status" -eq 0 ]
   [[ "$output" == "https://github.com/settings/personal-access-tokens/new?"* ]]
-  [[ "$output" == *"name=gmocquet-portfolio-gh-pat-token"* ]]
+  [[ "$output" == *"name=ci-gh-pat-token-gmocquet-portfolio"* ]]
   [[ "$output" == *"target_name=gmocquet"* ]]
   [[ "$output" == *"expires_in=none"* ]]
   [[ "$output" == *"contents=write"* ]]
@@ -106,10 +106,19 @@ STUB_EOF
   [[ "$output" == *"INSUFFICIENT"* ]]
 }
 
-@test "delete calls gh secret delete with the secret name and repo" {
+@test "delete removes the secret and points to the fine-grained tokens page" {
   run bash -c 'source "$1"; cmd_delete gmocquet/gmocquet-portfolio' _ "$SCRIPT"
   [ "$status" -eq 0 ]
   grep -qx "delete GH_PAT_TOKEN --repo gmocquet/gmocquet-portfolio" "$STUB_CALLS"
+  [[ "$output" == *"github.com/settings/personal-access-tokens"* ]]
+  [[ "$output" == *"ci-gh-pat-token-gmocquet-portfolio"* ]]
+}
+
+@test "delete still points to the tokens page when the secret is already gone" {
+  run env STUB_DELETE_FAIL=1 bash -c 'source "$1"; cmd_delete gmocquet/gmocquet-portfolio' _ "$SCRIPT"
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"already removed"* ]]
+  [[ "$output" == *"github.com/settings/personal-access-tokens"* ]]
 }
 
 @test "SECRET_NAME override is respected" {

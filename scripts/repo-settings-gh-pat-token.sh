@@ -35,11 +35,14 @@ urlencode() {
 # still picks it in the form.
 pat_url() {
   local owner="$1" repo_name="$2" name desc
-  name="${repo_name}-gh-pat-token"
+  name="ci-gh-pat-token-${repo_name}"
   desc="CI token for ${repo_name}. Used by the release-tag GitHub Actions workflow to push v* release tags so the deploy workflow triggers (the automatic GITHUB_TOKEN cannot trigger downstream workflows). Scope: Contents read and write on ${repo_name} only."
   printf 'https://github.com/settings/personal-access-tokens/new?name=%s&description=%s&target_name=%s&expires_in=%s&contents=write\n' \
     "$(urlencode "$name")" "$(urlencode "$desc")" "$owner" "$PAT_EXPIRES_IN"
 }
+
+# tokens_url — echo the fine-grained PAT management page (there is no API to delete a user's own PAT).
+tokens_url() { printf 'https://github.com/settings/personal-access-tokens\n'; }
 
 # open_url <url> — open in the default browser, or print it when no opener is available.
 open_url() {
@@ -113,11 +116,21 @@ cmd_status() {
   fi
 }
 
-# cmd_delete <repo> — remove the Actions secret.
+# cmd_delete <repo> — remove the Actions secret, then open the fine-grained PAT page so the user can
+# revoke the token itself. GitHub exposes no API to delete a user's own PAT, so this step is manual.
 cmd_delete() {
-  local repo="$1"
-  gh secret delete "$SECRET_NAME" --repo "$repo"
-  echo "==> deleted $SECRET_NAME from $repo"
+  local repo="$1" name="ci-gh-pat-token-${1##*/}" url
+  if gh secret delete "$SECRET_NAME" --repo "$repo" 2>/dev/null; then
+    echo "==> deleted the $SECRET_NAME Actions secret from $repo"
+  else
+    echo "==> $SECRET_NAME Actions secret not found on $repo (already removed?)"
+  fi
+  url="$(tokens_url)"
+  echo ""
+  echo "GitHub has no API to delete a personal access token — revoke it in the browser:"
+  echo "  find the fine-grained token named '$name' (or whichever you created), open it, and Delete."
+  echo "  $url"
+  open_url "$url"
 }
 
 usage() { echo "usage: $(basename "$0") <set|status|delete>" >&2; }

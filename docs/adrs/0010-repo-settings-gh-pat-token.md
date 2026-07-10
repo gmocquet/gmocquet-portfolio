@@ -39,8 +39,11 @@ Options weighed to make the tag push trigger `deploy`:
   a token that fails — turning the earlier silent failure into fail-fast. A stored Actions secret is
   **write-only**, so this is the only place its rights can be checked with the token in hand; `-status`
   re-runs the same probe on a token passed via `GH_PAT_TOKEN`, otherwise it only confirms presence.
-  The tooling is ported from `gmocquet/neo` (`repo-settings-token-*`), renamed and adapted to this
-  repo's conventions (Makefile one-liners → `scripts/`, bats-tested).
+  `-delete` removes the secret and opens the fine-grained-tokens page to revoke the PAT itself —
+  GitHub exposes **no API to delete a user's own PAT** (the OAuth Authorizations API was retired in
+  2020; the fine-grained-PAT API is org-only and App-only), so that last step stays manual. The
+  tooling is ported from `gmocquet/neo` (`repo-settings-token-*`), renamed and adapted to this repo's
+  conventions (Makefile one-liners → `scripts/`, bats-tested).
 
 **Documented exception to ADR 0009** ("no static secret stored in GitHub"; CI secrets via OIDC):
 there is **no OIDC path to authenticate a git tag push as a user**. This PAT is a GitHub-native

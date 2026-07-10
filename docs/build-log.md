@@ -183,4 +183,6 @@ A visual pass on the M3 site produced four refinements, delivered as focused PRs
   tooling so this fails fast instead of silently: `-set` now **verifies the token can create a tag
   before storing it** (creates + deletes a throwaway non-`v*` ref — the exact call the workflow makes
   — so no workflow is triggered), and `-status` re-runs that probe on a token passed via
-  `GH_PAT_TOKEN` (a stored Actions secret is write-only, so its rights can't be read back).
+  `GH_PAT_TOKEN` (a stored Actions secret is write-only, so its rights can't be read back). `-delete`
+  also opens the fine-grained-tokens page to revoke the PAT itself (GitHub has no API to delete a
+  user's own PAT); the token is named `ci-gh-pat-token-<repo>`.
