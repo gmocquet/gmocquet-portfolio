@@ -32,14 +32,14 @@ STUB_EOF
   [[ "$output" == "https://github.com/settings/personal-access-tokens/new?"* ]]
   [[ "$output" == *"name=gmocquet-portfolio-gh-pat-token"* ]]
   [[ "$output" == *"target_name=gmocquet"* ]]
-  [[ "$output" == *"expires_in=90"* ]]
+  [[ "$output" == *"expires_in=none"* ]]
   [[ "$output" == *"contents=write"* ]]
 }
 
 @test "pat_url honours the PAT_EXPIRES_IN override" {
-  run env PAT_EXPIRES_IN=none bash -c 'source "$1"; pat_url gmocquet gmocquet-portfolio' _ "$SCRIPT"
+  run env PAT_EXPIRES_IN=90 bash -c 'source "$1"; pat_url gmocquet gmocquet-portfolio' _ "$SCRIPT"
   [ "$status" -eq 0 ]
-  [[ "$output" == *"expires_in=none"* ]]
+  [[ "$output" == *"expires_in=90"* ]]
 }
 
 @test "status reports the secret as set when gh lists it" {

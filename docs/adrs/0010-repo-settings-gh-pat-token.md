@@ -26,7 +26,8 @@ Options weighed to make the tag push trigger `deploy`:
 ## Decision
 
 **`release-tag.yml` pushes the `v*` tag with a fine-grained PAT** — `secrets.GH_PAT_TOKEN`, scope
-**Contents: Read and write on this repo only**, with a **bounded expiry** (default 90 days).
+**Contents: Read and write on this repo only**, and **No expiration by default**
+(`PAT_EXPIRES_IN=none`, matching neo; set `PAT_EXPIRES_IN=<days>` for a bounded expiry).
 `deploy.yml` is unchanged (`on: push: tags: v*`).
 
 - **Stored as a GitHub Actions secret** (not Infisical), managed reproducibly by
@@ -39,17 +40,16 @@ Options weighed to make the tag push trigger `deploy`:
 **Documented exception to ADR 0009** ("no static secret stored in GitHub"; CI secrets via OIDC):
 there is **no OIDC path to authenticate a git tag push as a user**. This PAT is a GitHub-native
 bootstrap credential, used only inside Actions; the exception is deliberately narrow — minimal scope
-(Contents:write, one repo), bounded expiry, one-command rotation/deletion.
+(Contents:write, one repo), one-command rotation/deletion, and an optional bounded expiry.
 
 ## Consequences
 
 - Merging any PR to `main` again produces a tag that **triggers `deploy`**; the next tag (`v0.0.9`)
   self-heals the un-deployed `v0.0.8` by deploying current `main` (which already carries it).
-- One long-lived secret returns to GitHub, by necessity. Mitigations: minimal scope, bounded expiry,
-  trivial rotation (`make repo-settings-gh-pat-token-set`) and revocation
+- One long-lived, **non-expiring-by-default** secret returns to GitHub, by necessity. Mitigations:
+  minimal scope, trivial rotation (`make repo-settings-gh-pat-token-set`) and revocation
   (`make repo-settings-gh-pat-token-delete` + delete the PAT on GitHub); it can write nothing but
-  refs/contents on this single repo.
-- **Rotation burden**: an expired PAT silently fails the tag push (red `release-tag` run). Re-run the
-  `-set` target to rotate; `-status` reports presence. Set `PAT_EXPIRES_IN=none` to opt out of expiry
-  (neo's default) at the cost of an indefinite credential.
+  refs/contents on this single repo. Set `PAT_EXPIRES_IN=<days>` for a bounded expiry instead.
+- **Rotation** (only when a bounded expiry is set): an expired PAT silently fails the tag push (red
+  `release-tag` run). Re-run the `-set` target to rotate; `-status` reports presence.
 - The `repo-settings-gh-pat-token-*` tooling is reusable to provision any repo's CI PAT.

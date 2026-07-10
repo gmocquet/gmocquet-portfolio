@@ -15,7 +15,7 @@
 set -euo pipefail
 
 : "${SECRET_NAME:=GH_PAT_TOKEN}"
-: "${PAT_EXPIRES_IN:=90}"          # GitHub PAT form: a number of days, or "none" for no expiry.
+: "${PAT_EXPIRES_IN:=none}"        # GitHub PAT `expires_in`: "none" (No expiration) or a number of days.
 
 # urlencode <string> — percent-encode a value for use in a query string (ASCII input).
 urlencode() {
