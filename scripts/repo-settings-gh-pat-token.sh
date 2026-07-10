@@ -82,8 +82,9 @@ cmd_set() {
   echo "Paste the token when prompted (input is masked):"
   gh secret set "$SECRET_NAME" --repo "$repo"
   echo ""
-  echo "==> stored $SECRET_NAME on $repo. Verify its rights:"
-  echo "    GH_PAT_TOKEN=<token> make repo-settings-gh-pat-token-status"
+  echo "==> stored $SECRET_NAME on $repo. Next steps:"
+  echo "  1. Verify the token locally: GH_PAT_TOKEN=<token> make repo-settings-gh-pat-token-status"
+  echo "  2. On the next push/merge to main, release-tag creates a v* tag with this PAT -> deploy runs."
 }
 
 # cmd_status <repo> — report whether the Actions secret exists and, when a token is supplied in the
