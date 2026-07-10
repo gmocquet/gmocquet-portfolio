@@ -85,7 +85,7 @@
   stack: [AWS, GCP, S3, GCS, BigQuery, Terraform, Airflow (Composer), Kubernetes, GPU, IAM]
   media:
     - label: "White paper — AI in production: life cycle & model drift (MLOps), chapter 3 (2019)"
-      url: /assets/quantmetry-2019-white-paper-mlops.pdf
+      url: /assets/gmocquet-quantmetry-2019-white-paper-mlops-ai-in-production-model-lifecycle-and-drift-scheduled-updates-and-retraining-management.pdf
       kind: pdf
 
 - id: ysance
