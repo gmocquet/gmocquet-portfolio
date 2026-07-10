@@ -110,9 +110,12 @@ directly over HTTPS while email is untouched. Three parts:
   the DS to expire — see the runbook). Mailboxes stay at OVH.
 - **Release-driven deploy** — `.github/workflows/deploy.yml` runs `make deploy` (build + `wrangler`
   Direct Upload) on every **`v*` release tag** (tags are created by `release-tag.yml` from
-  Conventional Commits). It needs the `CLOUDFLARE_API_TOKEN` / `CLOUDFLARE_ACCOUNT_ID` secrets and
-  the optional `PUBLIC_CF_BEACON_TOKEN` variable (cookieless analytics beacon). `make deploy` also
-  works locally (the secrets come from your generated `.env` — see **Secrets**).
+  Conventional Commits). `release-tag.yml` pushes the tag with a **fine-grained PAT**
+  (`GH_PAT_TOKEN`, managed by `make repo-settings-gh-pat-token-*`) rather than the automatic
+  `GITHUB_TOKEN`, because GitHub does not trigger workflows from `GITHUB_TOKEN`-created events — see
+  ADR 0010. Deploy needs the `CLOUDFLARE_API_TOKEN` / `CLOUDFLARE_ACCOUNT_ID` secrets and the
+  optional `PUBLIC_CF_BEACON_TOKEN` variable (cookieless analytics beacon). `make deploy` also works
+  locally (the secrets come from your generated `.env` — see **Secrets**).
 
 ## Secrets
 
@@ -142,6 +145,12 @@ Expected variables (stored in Infisical, generated into `.env` — there is no c
 The same secrets feed CI: the deploy workflow migrates to fetching the **`prod`** secrets at runtime
 via Infisical's GitHub Action over **OIDC** (no long-lived secrets in GitHub). See ADR 0009 and
 `docs/playbook/secrets-infisical.md`.
+
+**One exception** — the `release-tag` workflow needs a **`GH_PAT_TOKEN`** fine-grained PAT
+(Contents:write, this repo only) to push `v*` tags so `deploy` triggers; there is no OIDC path to
+push git tags as a user. It lives as a **GitHub Actions secret**, not in Infisical, and is
+provisioned/rotated reproducibly with `make repo-settings-gh-pat-token-set` (and `-status` /
+`-delete`). See ADR 0010.
 
 ## Governance
 

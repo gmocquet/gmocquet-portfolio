@@ -163,3 +163,18 @@ A visual pass on the M3 site produced four refinements, delivered as focused PRs
 - Moved `deploy` from "on every push to `main`" to **on every `v*` release tag** — deploys now map to
   the semantic version produced by `release-tag` (bootstrap `v0.0.1`; patch by default, minor on
   `feat`, major on breaking). `release-tag` keeps creating the tag with the default `GITHUB_TOKEN`.
+
+## 2026-07-10 — Fix the deploy trigger (release tags via a fine-grained PAT)
+
+- Symptom: `v0.0.8` (the white-paper refresh) was tagged by `release-tag` but **`deploy` never ran**;
+  the live site stayed stale. Root cause: GitHub does **not** start workflow runs from events created
+  by the automatic `GITHUB_TOKEN` (anti-recursion), so a tag it pushes can never trigger
+  `deploy.yml`'s `push: tags: v*`. No deploy had run since the tag-trigger switch (PR #24).
+- Fix: `release-tag.yml` now pushes the tag with a **fine-grained PAT** (`secrets.GH_PAT_TOKEN`,
+  Contents:write) — a real user identity, so the push triggers `deploy`. `deploy.yml` is unchanged.
+- Tooling: ported `repo-settings-token-*` from `gmocquet/neo`, renamed to
+  **`repo-settings-gh-pat-token-*`** and adapted to this repo (Makefile one-liners →
+  `scripts/repo-settings-gh-pat-token.sh`, bats-tested). `-set` opens the pre-filled PAT page and
+  stores the token via `gh secret set`; `-status` / `-delete` manage it. The PAT lives as a GitHub
+  Actions secret — a documented, narrow exception to the Infisical source-of-truth (ADR 0009), since
+  there is no OIDC path to push git tags as a user. See ADR 0010.
