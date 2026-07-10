@@ -14,6 +14,7 @@ with a new ADR rather than editing an old one. Format: Context → Decision → 
 - [0007 — Delegate DNS to Cloudflare; keep mail at OVH (records replicated)](0007-delegate-dns-to-cloudflare-mail-stays-ovh.md)
 - [0008 — Remote OpenTofu state in Cloudflare R2 (private, no passphrase)](0008-remote-state-cloudflare-r2.md)
 - [0009 — Application secrets in Infisical (single source of truth; .env generated, CI via OIDC)](0009-secrets-management-infisical.md)
+- [0010 — Release tags pushed with a fine-grained PAT (so `deploy` triggers)](0010-repo-settings-gh-pat-token.md)
 
 ## Adding an ADR
 

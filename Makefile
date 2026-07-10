@@ -6,10 +6,11 @@
 SHELL := /bin/bash
 .ONESHELL:
 
-.PHONY: help doctor init dev build lint test i18n changelog secrets-pull deploy gh-bootstrap
+.PHONY: help doctor init dev build lint test i18n changelog secrets-pull deploy gh-bootstrap \
+	repo-settings-gh-pat-token-set repo-settings-gh-pat-token-status repo-settings-gh-pat-token-delete
 
 help: ## List available targets
-	@grep -hE '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN{FS=":.*?## "}{printf "  \033[1m%-14s\033[0m %s\n", $$1, $$2}'
+	@grep -hE '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN{FS=":.*?## "}{printf "  \033[1m%-34s\033[0m %s\n", $$1, $$2}'
 
 doctor: ## Preflight: required tools + access (GitHub SSH, Anthropic OAuth/API key)
 	@./scripts/doctor.sh
@@ -43,3 +44,12 @@ deploy: ## Build and deploy the frontend to Cloudflare Pages
 
 gh-bootstrap: ## Create GitHub governance (milestones, labels, issues, board, branch protection)
 	@./scripts/github-bootstrap.sh
+
+repo-settings-gh-pat-token-set: ## Create the CI PAT (pre-filled page) + store it as the GH_PAT_TOKEN Actions secret
+	@./scripts/repo-settings-gh-pat-token.sh set
+
+repo-settings-gh-pat-token-status: ## Report whether the GH_PAT_TOKEN Actions secret exists
+	@./scripts/repo-settings-gh-pat-token.sh status
+
+repo-settings-gh-pat-token-delete: ## Delete the GH_PAT_TOKEN Actions secret
+	@./scripts/repo-settings-gh-pat-token.sh delete
