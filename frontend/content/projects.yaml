@@ -36,7 +36,7 @@
   stack: [MLOps, Model drift, CI/CD, Cloud architecture]
   media:
     - label: "White paper — AI in production: life cycle & model drift (PDF)"
-      url: /assets/quantmetry-2019-white-paper-mlops.pdf
+      url: /assets/gmocquet-quantmetry-2019-white-paper-mlops-ai-in-production-model-lifecycle-and-drift-scheduled-updates-and-retraining-management.pdf
       kind: pdf
   featured: true
 
