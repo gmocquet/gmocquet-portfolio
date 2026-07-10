@@ -45,7 +45,7 @@ deploy: ## Build and deploy the frontend to Cloudflare Pages
 gh-bootstrap: ## Create GitHub governance (milestones, labels, issues, board, branch protection)
 	@./scripts/github-bootstrap.sh
 
-repo-settings-gh-pat-token-set: ## Create the CI PAT (pre-filled page), verify it can create tags, and store it as GH_PAT_TOKEN
+repo-settings-gh-pat-token-set: ## Create the CI PAT (pre-filled page) and store it as GH_PAT_TOKEN (verify rights with -status)
 	@./scripts/repo-settings-gh-pat-token.sh set
 
 repo-settings-gh-pat-token-status: ## Check the GH_PAT_TOKEN secret exists (with GH_PAT_TOKEN=<token>, also verify its Contents:write rights)

@@ -66,18 +66,6 @@ STUB_EOF
   [ "$status" -ne 0 ]
 }
 
-@test "set verifies then stores the token when it can create tags" {
-  run bash -c 'printf "tok_valid\n" | { source "$1"; cmd_set gmocquet gmocquet/gmocquet-portfolio; }' _ "$SCRIPT"
-  [ "$status" -eq 0 ]
-  grep -qx "set GH_PAT_TOKEN --repo gmocquet/gmocquet-portfolio" "$STUB_CALLS"
-}
-
-@test "set refuses to store a token that cannot create tags" {
-  run env STUB_CREATE_FAIL=1 bash -c 'printf "tok_bad\n" | { source "$1"; cmd_set gmocquet gmocquet/gmocquet-portfolio; }' _ "$SCRIPT"
-  [ "$status" -ne 0 ]
-  [ ! -s "$STUB_CALLS" ]                          # nothing stored
-}
-
 @test "status reports the secret as set when gh lists it" {
   run env STUB_SECRET_LIST=$'GH_PAT_TOKEN\t2026-07-10' \
     bash -c 'source "$1"; cmd_status gmocquet/gmocquet-portfolio' _ "$SCRIPT"

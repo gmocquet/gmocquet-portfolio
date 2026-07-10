@@ -65,10 +65,10 @@ probe_tag_write() {
   return 0
 }
 
-# cmd_set <owner> <repo> — guide the PAT creation, verify it can create tags, then store it. Refuses
-# to store a token that lacks Contents:write (fail-fast — the exact mistake that broke the release).
+# cmd_set <owner> <repo> — guide the PAT creation, then store it via gh's native prompt (masked
+# input, ✓ on success). Verify the token's rights afterwards with `status` (see cmd_status).
 cmd_set() {
-  local owner="$1" repo="$2" name="${2##*/}" token
+  local owner="$1" repo="$2" name="${2##*/}"
   echo "==> $SECRET_NAME — fine-grained PAT so CI can push v* release tags that trigger deploy."
   echo "    Scope: Contents read/write on $repo only. Stored as a GitHub Actions secret."
   echo ""
@@ -78,17 +78,12 @@ cmd_set() {
   echo "  - click Generate token, then copy it."
   echo ""
   open_url "$(pat_url "$owner" "$name")"
-  printf "Paste the token, then press Enter: "; read -rs token || true; echo
-  [[ -n "$token" ]] || { echo "no token entered — aborting." >&2; return 1; }
-  echo "==> verifying the token can create tags on $repo (create + delete a throwaway tag)..."
-  if ! probe_tag_write "$repo" "$token"; then
-    echo "ERROR: this token cannot create a tag on $repo — NOT stored." >&2
-    echo "  Fix the PAT and re-run: Resource owner -> $owner; Repository access -> Only select" >&2
-    echo "  repositories -> $repo; Permissions -> Contents: Read and write." >&2
-    return 1
-  fi
-  printf '%s' "$token" | gh secret set "$SECRET_NAME" --repo "$repo"
-  echo "==> $SECRET_NAME stored and verified — can create tags on $repo."
+  printf "Press Enter once the token is generated and copied... "; read -r _
+  echo "Paste the token when prompted (input is masked):"
+  gh secret set "$SECRET_NAME" --repo "$repo"
+  echo ""
+  echo "==> stored $SECRET_NAME on $repo. Verify its rights:"
+  echo "    GH_PAT_TOKEN=<token> make repo-settings-gh-pat-token-status"
 }
 
 # cmd_status <repo> — report whether the Actions secret exists and, when a token is supplied in the

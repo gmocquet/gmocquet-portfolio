@@ -180,9 +180,10 @@ A visual pass on the M3 site produced four refinements, delivered as focused PRs
   there is no OIDC path to push git tags as a user. See ADR 0010.
 - Follow-up: the first PAT was scoped to the wrong repository, so `release-tag` still 404'd on
   `POST git/refs` (a private repo masks the 403 as 404) and `v0.0.9` was never created. Hardened the
-  tooling so this fails fast instead of silently: `-set` now **verifies the token can create a tag
-  before storing it** (creates + deletes a throwaway non-`v*` ref — the exact call the workflow makes
-  — so no workflow is triggered), and `-status` re-runs that probe on a token passed via
-  `GH_PAT_TOKEN` (a stored Actions secret is write-only, so its rights can't be read back). `-delete`
-  also opens the fine-grained-tokens page to revoke the PAT itself (GitHub has no API to delete a
-  user's own PAT); the token is named `ci-gh-pat-token-<repo>`.
+  tooling: **`-status` verifies rights** — passed a token via `GH_PAT_TOKEN`, it probes `POST git/refs`
+  by creating + deleting a throwaway non-`v*` ref (the exact call the workflow makes, so nothing is
+  triggered), catching a mis-scoped PAT. `-set` keeps gh's **native masked prompt** (no plaintext, `✓`
+  on success); a stored Actions secret is write-only and gh hands the token straight to GitHub, so the
+  rights probe lives in `-status`, not `-set`. `-delete` also opens the fine-grained-tokens page to
+  revoke the PAT itself (GitHub has no API to delete a user's own PAT); the token is named
+  `ci-gh-pat-token-<repo>`.
