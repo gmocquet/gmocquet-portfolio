@@ -36,9 +36,11 @@ Options weighed to make the tag push trigger `deploy`:
   the user only picks the repository, which GitHub cannot pre-select) and stores the pasted token via
   `gh secret set`'s **native prompt** (masked input, no plaintext, `✓` on success). A stored Actions
   secret is **write-only**, and gh's prompt hands the token straight to GitHub, so a token's rights
-  are verified by **`-status`** instead: passed a token via `GH_PAT_TOKEN`, it probes `POST git/refs`
-  by creating and deleting a throwaway **non-`v*`** ref (the same call that 404'd with a mis-scoped
-  PAT); otherwise it only confirms presence.
+  are verified by **`-status`** instead: passed a token via `GH_PAT_TOKEN`, it lists what the token
+  grants (owner, kind, and Contents:write — probed by creating and deleting a throwaway **non-`v*`**
+  ref, the same call that 404'd with a mis-scoped PAT); otherwise it confirms the secret's presence
+  and points to the PAT in Developer settings. GitHub has **no API to list your own PATs**, so
+  presence-by-name and full settings can't be read — only exercised with the token in hand.
   `-delete` removes the secret and opens the fine-grained-tokens page to revoke the PAT itself —
   GitHub exposes **no API to delete a user's own PAT** (the OAuth Authorizations API was retired in
   2020; the fine-grained-PAT API is org-only and App-only), so that last step stays manual. The

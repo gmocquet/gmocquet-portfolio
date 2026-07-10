@@ -87,29 +87,41 @@ cmd_set() {
   echo "  2. On the next push/merge to main, release-tag creates a v* tag with this PAT -> deploy runs."
 }
 
-# cmd_status <repo> — report whether the Actions secret exists and, when a token is supplied in the
-# environment (GH_PAT_TOKEN), verify it actually has Contents:write. The stored secret's value is
-# write-only, so its rights cannot be checked from here without the token in hand.
+# cmd_status <repo> — report (1) whether the Actions secret exists and (2) the fine-grained PAT in the
+# user's Developer settings. GitHub has NO API to list your own PATs, so presence-by-name and full
+# settings can't be read here; when the token is supplied via GH_PAT_TOKEN, list what it actually
+# grants (owner, kind, Contents:write on this repo) by exercising it.
 cmd_status() {
-  local repo="$1"
+  local repo="$1" name="ci-gh-pat-token-${1##*/}" rc=0
   if gh secret list --repo "$repo" | grep -q "^${SECRET_NAME}[[:space:]]"; then
-    echo "$SECRET_NAME: set on $repo"
+    echo "$SECRET_NAME (Actions secret): set on $repo"
   else
-    echo "$SECRET_NAME: not set on $repo"
-    return 0
+    echo "$SECRET_NAME (Actions secret): not set on $repo"
   fi
+  echo ""
+  echo "PAT '$name' (Settings > Developer settings > Fine-grained tokens):"
+  echo "  GitHub has no API to list your own PATs — check its presence at $(tokens_url)"
   if [[ -n "${GH_PAT_TOKEN:-}" ]]; then
+    local login kind
+    login="$(GH_TOKEN="$GH_PAT_TOKEN" gh api user -q '.login' 2>/dev/null || true)"
+    case "$GH_PAT_TOKEN" in
+      github_pat_*) kind="fine-grained" ;;
+      ghp_*)        kind="classic (expected fine-grained)" ;;
+      *)            kind="unknown" ;;
+    esac
+    echo "  supplied token grants:"
+    echo "    owner:                    ${login:-unknown}"
+    echo "    kind:                     $kind"
     if probe_tag_write "$repo" "$GH_PAT_TOKEN"; then
-      echo "$SECRET_NAME: rights OK — the supplied token can create tags on $repo"
+      echo "    Contents write on $repo:  yes (can create release tags)"
     else
-      echo "$SECRET_NAME: rights INSUFFICIENT — the supplied token cannot create tags on $repo" >&2
-      echo "  Fix: Repository access -> Only select repositories -> $repo; Contents: Read and write." >&2
-      return 1
+      echo "    Contents write on $repo:  NO — mis-scoped or invalid (wrong repo / missing Contents:write)"
+      rc=1
     fi
   else
-    echo "  rights not checked: Actions secrets are write-only. \`set\` verifies at store time; or run"
-    echo "  \`GH_PAT_TOKEN=<token> make repo-settings-gh-pat-token-status\` to probe a token now."
+    echo "  tip: GH_PAT_TOKEN=<token> make repo-settings-gh-pat-token-status  — lists what the token grants"
   fi
+  return "$rc"
 }
 
 # cmd_delete <repo> — remove the Actions secret, then open the fine-grained PAT page so the user can

@@ -15,6 +15,7 @@ if [[ "$1" == "api" ]]; then
     *commits/HEAD*)    [[ "${STUB_SHA_FAIL:-}" == 1 ]] && exit 1; echo "deadbeefdeadbeefdeadbeefdeadbeefdeadbeef"; exit 0 ;;
     *POST*git/refs*)   [[ "${STUB_CREATE_FAIL:-}" == 1 ]] && exit 1; exit 0 ;;
     *DELETE*git/refs*) exit 0 ;;
+    *"api user"*)      echo "gmocquet"; exit 0 ;;
     *) exit 0 ;;
   esac
 fi
@@ -66,32 +67,36 @@ STUB_EOF
   [ "$status" -ne 0 ]
 }
 
-@test "status reports the secret as set when gh lists it" {
+@test "status reports the secret set and points to the PAT in Developer settings" {
   run env STUB_SECRET_LIST=$'GH_PAT_TOKEN\t2026-07-10' \
     bash -c 'source "$1"; cmd_status gmocquet/gmocquet-portfolio' _ "$SCRIPT"
   [ "$status" -eq 0 ]
-  [[ "$output" == *"GH_PAT_TOKEN: set on gmocquet/gmocquet-portfolio"* ]]
-  [[ "$output" == *"rights not checked"* ]]
+  [[ "$output" == *"GH_PAT_TOKEN (Actions secret): set on gmocquet/gmocquet-portfolio"* ]]
+  [[ "$output" == *"PAT 'ci-gh-pat-token-gmocquet-portfolio'"* ]]
+  [[ "$output" == *"no API to list your own PATs"* ]]
+  [[ "$output" == *"github.com/settings/personal-access-tokens"* ]]
 }
 
-@test "status reports not set when gh lists nothing" {
+@test "status reports the secret not set" {
   run bash -c 'source "$1"; cmd_status gmocquet/gmocquet-portfolio' _ "$SCRIPT"
   [ "$status" -eq 0 ]
-  [ "$output" = "GH_PAT_TOKEN: not set on gmocquet/gmocquet-portfolio" ]
+  [[ "$output" == *"GH_PAT_TOKEN (Actions secret): not set on gmocquet/gmocquet-portfolio"* ]]
 }
 
-@test "status verifies rights OK when a token is supplied" {
-  run env STUB_SECRET_LIST=$'GH_PAT_TOKEN\t2026-07-10' GH_PAT_TOKEN=tok \
+@test "status lists what the supplied token grants (owner, kind, rights)" {
+  run env STUB_SECRET_LIST=$'GH_PAT_TOKEN\t2026-07-10' GH_PAT_TOKEN=github_pat_abc \
     bash -c 'source "$1"; cmd_status gmocquet/gmocquet-portfolio' _ "$SCRIPT"
   [ "$status" -eq 0 ]
-  [[ "$output" == *"rights OK"* ]]
+  [[ "$output" == *"owner:"*"gmocquet"* ]]
+  [[ "$output" == *"kind:"*"fine-grained"* ]]
+  [[ "$output" == *"can create release tags"* ]]
 }
 
-@test "status flags insufficient rights when the supplied token cannot create tags" {
-  run env STUB_SECRET_LIST=$'GH_PAT_TOKEN\t2026-07-10' GH_PAT_TOKEN=tok STUB_CREATE_FAIL=1 \
+@test "status flags a mis-scoped supplied token" {
+  run env STUB_SECRET_LIST=$'GH_PAT_TOKEN\t2026-07-10' GH_PAT_TOKEN=github_pat_bad STUB_CREATE_FAIL=1 \
     bash -c 'source "$1"; cmd_status gmocquet/gmocquet-portfolio' _ "$SCRIPT"
   [ "$status" -ne 0 ]
-  [[ "$output" == *"INSUFFICIENT"* ]]
+  [[ "$output" == *"NO — mis-scoped or invalid"* ]]
 }
 
 @test "delete removes the secret and points to the fine-grained tokens page" {
