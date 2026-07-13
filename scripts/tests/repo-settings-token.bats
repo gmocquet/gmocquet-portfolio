@@ -1,11 +1,11 @@
 #!/usr/bin/env bats
-# Unit tests for scripts/repo-settings-gh-pat-token.sh — hermetic: `gh` and `open` are stubbed on
+# Unit tests for scripts/repo-settings-token.sh — hermetic: `gh` and `open` are stubbed on
 # PATH, and each function runs in an isolated subshell that sources the script (so its `set -e` never
 # leaks into bats). The gh stub records mutating `secret` calls to $STUB_CALLS, serves `secret list`
 # from $STUB_SECRET_LIST, and simulates the tag-write probe via $STUB_CREATE_FAIL / $STUB_SHA_FAIL.
 
 setup() {
-  SCRIPT="$BATS_TEST_DIRNAME/../repo-settings-gh-pat-token.sh"
+  SCRIPT="$BATS_TEST_DIRNAME/../repo-settings-token.sh"
   STUB="$BATS_TEST_TMPDIR/bin"; mkdir -p "$STUB"
   export STUB_CALLS="$BATS_TEST_TMPDIR/calls"; : >"$STUB_CALLS"
   cat >"$STUB/gh" <<'STUB_EOF'

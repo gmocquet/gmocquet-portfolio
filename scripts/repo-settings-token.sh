@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# repo-settings-gh-pat-token — provision & manage the fine-grained GitHub PAT that lets CI create the
+# repo-settings-token — provision & manage the fine-grained GitHub PAT that lets CI create the
 # `v*` release tags which trigger downstream workflows. The automatic GITHUB_TOKEN cannot start new
 # workflow runs (GitHub anti-recursion; only workflow_dispatch/repository_dispatch are exempt), so
 # .github/workflows/release-tag.yml pushes the tag with this PAT — a push from a real user identity,
@@ -10,7 +10,7 @@
 # Actions to authenticate a git tag push, and there is no OIDC path to push tags as a user.
 #
 # Requires an authenticated `gh` CLI with admin on the repo. Idempotent: safe to re-run.
-# Usage: repo-settings-gh-pat-token.sh <set|status|delete>
+# Usage: repo-settings-token.sh <set|status|delete>
 # Logic is isolated (pure functions + a sourcing guard) so bats can unit-test it.
 set -euo pipefail
 
@@ -83,7 +83,7 @@ cmd_set() {
   gh secret set "$SECRET_NAME" --repo "$repo"
   echo ""
   echo "==> stored $SECRET_NAME on $repo. Next steps:"
-  echo "  1. Verify the token locally: GH_PAT_TOKEN=<token> make repo-settings-gh-pat-token-status"
+  echo "  1. Verify the token locally: GH_PAT_TOKEN=<token> make repo-settings-token-status"
   echo "  2. On the next push/merge to main, release-tag creates a v* tag with this PAT -> deploy runs."
 }
 
@@ -119,7 +119,7 @@ cmd_status() {
       rc=1
     fi
   else
-    echo "  tip: GH_PAT_TOKEN=<token> make repo-settings-gh-pat-token-status  — lists what the token grants"
+    echo "  tip: GH_PAT_TOKEN=<token> make repo-settings-token-status  — lists what the token grants"
   fi
   return "$rc"
 }

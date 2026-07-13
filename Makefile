@@ -7,7 +7,7 @@ SHELL := /bin/bash
 .ONESHELL:
 
 .PHONY: help doctor init dev build lint test i18n changelog secrets-pull deploy gh-bootstrap \
-	repo-settings-gh-pat-token-set repo-settings-gh-pat-token-status repo-settings-gh-pat-token-delete
+	repo-settings-token-set repo-settings-token-status repo-settings-token-delete
 
 help: ## List available targets
 	@grep -hE '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN{FS=":.*?## "}{printf "  \033[1m%-34s\033[0m %s\n", $$1, $$2}'
@@ -45,11 +45,11 @@ deploy: ## Build and deploy the frontend to Cloudflare Pages
 gh-bootstrap: ## Create GitHub governance (milestones, labels, issues, board, branch protection)
 	@./scripts/github-bootstrap.sh
 
-repo-settings-gh-pat-token-set: ## Create the CI PAT (pre-filled page) and store it as GH_PAT_TOKEN (verify rights with -status)
-	@./scripts/repo-settings-gh-pat-token.sh set
+repo-settings-token-set: ## Create the CI PAT (pre-filled page) and store it as GH_PAT_TOKEN (verify rights with -status)
+	@./scripts/repo-settings-token.sh set
 
-repo-settings-gh-pat-token-status: ## Check the GH_PAT_TOKEN secret + the PAT in Developer settings (with GH_PAT_TOKEN=<token>, list what it grants)
-	@./scripts/repo-settings-gh-pat-token.sh status
+repo-settings-token-status: ## Check the GH_PAT_TOKEN secret + the PAT in Developer settings (with GH_PAT_TOKEN=<token>, list what it grants)
+	@./scripts/repo-settings-token.sh status
 
-repo-settings-gh-pat-token-delete: ## Delete the GH_PAT_TOKEN Actions secret and open the tokens page to revoke the PAT
-	@./scripts/repo-settings-gh-pat-token.sh delete
+repo-settings-token-delete: ## Delete the GH_PAT_TOKEN Actions secret and open the tokens page to revoke the PAT
+	@./scripts/repo-settings-token.sh delete
