@@ -31,7 +31,7 @@ Options weighed to make the tag push trigger `deploy`:
 `deploy.yml` is unchanged (`on: push: tags: v*`).
 
 - **Stored as a GitHub Actions secret** (not Infisical), managed reproducibly by
-  `make repo-settings-gh-pat-token-{set,status,delete}` → `scripts/repo-settings-gh-pat-token.sh`.
+  `make repo-settings-token-{set,status,delete}` → `scripts/repo-settings-token.sh`.
   `-set` opens the **pre-filled** fine-grained-PAT page (name, description, expiry, Contents:write —
   the user only picks the repository, which GitHub cannot pre-select) and stores the pasted token via
   `gh secret set`'s **native prompt** (masked input, no plaintext, `✓` on success). A stored Actions
@@ -44,7 +44,7 @@ Options weighed to make the tag push trigger `deploy`:
   `-delete` removes the secret and opens the fine-grained-tokens page to revoke the PAT itself —
   GitHub exposes **no API to delete a user's own PAT** (the OAuth Authorizations API was retired in
   2020; the fine-grained-PAT API is org-only and App-only), so that last step stays manual. The
-  tooling is ported from `gmocquet/neo` (`repo-settings-token-*`), renamed and adapted to this repo's
+  tooling is ported from `gmocquet/neo` (`repo-settings-token-*`, same target names) and adapted to this repo's
   conventions (Makefile one-liners → `scripts/`, bats-tested).
 
 **Documented exception to ADR 0009** ("no static secret stored in GitHub"; CI secrets via OIDC):
@@ -57,9 +57,9 @@ bootstrap credential, used only inside Actions; the exception is deliberately na
 - Merging any PR to `main` again produces a tag that **triggers `deploy`**; the next tag (`v0.0.9`)
   self-heals the un-deployed `v0.0.8` by deploying current `main` (which already carries it).
 - One long-lived, **non-expiring-by-default** secret returns to GitHub, by necessity. Mitigations:
-  minimal scope, trivial rotation (`make repo-settings-gh-pat-token-set`) and revocation
-  (`make repo-settings-gh-pat-token-delete` + delete the PAT on GitHub); it can write nothing but
+  minimal scope, trivial rotation (`make repo-settings-token-set`) and revocation
+  (`make repo-settings-token-delete` + delete the PAT on GitHub); it can write nothing but
   refs/contents on this single repo. Set `PAT_EXPIRES_IN=<days>` for a bounded expiry instead.
 - **Rotation** (only when a bounded expiry is set): an expired PAT silently fails the tag push (red
   `release-tag` run). Re-run the `-set` target to rotate; `-status` reports presence.
-- The `repo-settings-gh-pat-token-*` tooling is reusable to provision any repo's CI PAT.
+- The `repo-settings-token-*` tooling is reusable to provision any repo's CI PAT.

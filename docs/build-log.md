@@ -172,9 +172,8 @@ A visual pass on the M3 site produced four refinements, delivered as focused PRs
   `deploy.yml`'s `push: tags: v*`. No deploy had run since the tag-trigger switch (PR #24).
 - Fix: `release-tag.yml` now pushes the tag with a **fine-grained PAT** (`secrets.GH_PAT_TOKEN`,
   Contents:write) — a real user identity, so the push triggers `deploy`. `deploy.yml` is unchanged.
-- Tooling: ported `repo-settings-token-*` from `gmocquet/neo`, renamed to
-  **`repo-settings-gh-pat-token-*`** and adapted to this repo (Makefile one-liners →
-  `scripts/repo-settings-gh-pat-token.sh`, bats-tested). `-set` opens the pre-filled PAT page and
+- Tooling: ported `repo-settings-token-*` from `gmocquet/neo` and adapted to this repo (Makefile
+  one-liners → `scripts/repo-settings-token.sh`, bats-tested). `-set` opens the pre-filled PAT page and
   stores the token via `gh secret set`; `-status` / `-delete` manage it. The PAT lives as a GitHub
   Actions secret — a documented, narrow exception to the Infisical source-of-truth (ADR 0009), since
   there is no OIDC path to push git tags as a user. See ADR 0010.

@@ -111,7 +111,7 @@ directly over HTTPS while email is untouched. Three parts:
 - **Release-driven deploy** — `.github/workflows/deploy.yml` runs `make deploy` (build + `wrangler`
   Direct Upload) on every **`v*` release tag** (tags are created by `release-tag.yml` from
   Conventional Commits). `release-tag.yml` pushes the tag with a **fine-grained PAT**
-  (`GH_PAT_TOKEN`, managed by `make repo-settings-gh-pat-token-*`) rather than the automatic
+  (`GH_PAT_TOKEN`, managed by `make repo-settings-token-*`) rather than the automatic
   `GITHUB_TOKEN`, because GitHub does not trigger workflows from `GITHUB_TOKEN`-created events — see
   ADR 0010. Deploy needs the `CLOUDFLARE_API_TOKEN` / `CLOUDFLARE_ACCOUNT_ID` secrets and the
   optional `PUBLIC_CF_BEACON_TOKEN` variable (cookieless analytics beacon). `make deploy` also works
@@ -149,9 +149,9 @@ via Infisical's GitHub Action over **OIDC** (no long-lived secrets in GitHub). S
 **One exception** — the `release-tag` workflow needs a **`GH_PAT_TOKEN`** fine-grained PAT
 (Contents:write, this repo only) to push `v*` tags so `deploy` triggers; there is no OIDC path to
 push git tags as a user. It lives as a **GitHub Actions secret**, not in Infisical, and is
-provisioned/rotated reproducibly with `make repo-settings-gh-pat-token-set` (stored via gh's native
+provisioned/rotated reproducibly with `make repo-settings-token-set` (stored via gh's native
 masked prompt). `-status` reports whether the Actions secret exists and points to the PAT in
-Developer settings; given the token (`GH_PAT_TOKEN=<token> make repo-settings-gh-pat-token-status`)
+Developer settings; given the token (`GH_PAT_TOKEN=<token> make repo-settings-token-status`)
 it **lists what the token grants** (owner, kind, Contents:write). `-delete` removes the secret and
 opens the tokens page to revoke the PAT. GitHub has **no API to list or delete a user's own PAT**, so
 those steps stay manual. See ADR 0010.
