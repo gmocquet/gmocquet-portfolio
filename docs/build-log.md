@@ -178,3 +178,14 @@ A visual pass on the M3 site produced four refinements, delivered as focused PRs
   stores the token via `gh secret set`; `-status` / `-delete` manage it. The PAT lives as a GitHub
   Actions secret — a documented, narrow exception to the Infisical source-of-truth (ADR 0009), since
   there is no OIDC path to push git tags as a user. See ADR 0010.
+- Follow-up: the first PAT was scoped to the wrong repository, so `release-tag` still 404'd on
+  `POST git/refs` (a private repo masks the 403 as 404) and `v0.0.9` was never created. Hardened the
+  tooling: **`-status` verifies rights** — passed a token via `GH_PAT_TOKEN`, it lists what the token
+  grants (owner, kind, and Contents:write — probed via `POST git/refs`, creating + deleting a throwaway
+  non-`v*` ref, the exact call the workflow makes, so nothing is triggered), catching a mis-scoped PAT.
+  Without a token it reports the Actions secret's presence and points to the PAT in Developer settings
+  (GitHub has no API to list your own PATs). `-set` keeps gh's **native masked prompt** (no plaintext, `✓`
+  on success); a stored Actions secret is write-only and gh hands the token straight to GitHub, so the
+  rights probe lives in `-status`, not `-set`. `-delete` also opens the fine-grained-tokens page to
+  revoke the PAT itself (GitHub has no API to delete a user's own PAT); the token is named
+  `ci-gh-pat-token-<repo>`.

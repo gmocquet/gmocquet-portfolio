@@ -34,8 +34,18 @@ Options weighed to make the tag push trigger `deploy`:
   `make repo-settings-gh-pat-token-{set,status,delete}` → `scripts/repo-settings-gh-pat-token.sh`.
   `-set` opens the **pre-filled** fine-grained-PAT page (name, description, expiry, Contents:write —
   the user only picks the repository, which GitHub cannot pre-select) and stores the pasted token via
-  `gh secret set`. The tooling is ported from `gmocquet/neo` (`repo-settings-token-*`), renamed and
-  adapted to this repo's conventions (Makefile one-liners → `scripts/`, bats-tested).
+  `gh secret set`'s **native prompt** (masked input, no plaintext, `✓` on success). A stored Actions
+  secret is **write-only**, and gh's prompt hands the token straight to GitHub, so a token's rights
+  are verified by **`-status`** instead: passed a token via `GH_PAT_TOKEN`, it lists what the token
+  grants (owner, kind, and Contents:write — probed by creating and deleting a throwaway **non-`v*`**
+  ref, the same call that 404'd with a mis-scoped PAT); otherwise it confirms the secret's presence
+  and points to the PAT in Developer settings. GitHub has **no API to list your own PATs**, so
+  presence-by-name and full settings can't be read — only exercised with the token in hand.
+  `-delete` removes the secret and opens the fine-grained-tokens page to revoke the PAT itself —
+  GitHub exposes **no API to delete a user's own PAT** (the OAuth Authorizations API was retired in
+  2020; the fine-grained-PAT API is org-only and App-only), so that last step stays manual. The
+  tooling is ported from `gmocquet/neo` (`repo-settings-token-*`), renamed and adapted to this repo's
+  conventions (Makefile one-liners → `scripts/`, bats-tested).
 
 **Documented exception to ADR 0009** ("no static secret stored in GitHub"; CI secrets via OIDC):
 there is **no OIDC path to authenticate a git tag push as a user**. This PAT is a GitHub-native
