@@ -1,6 +1,11 @@
 # Changelog
 
 All notable changes to this project are documented here.
+## [0.1.2] - 2026-07-13
+
+### Refactor
+- *(ci)* Split release-tag into two jobs (changelog, then tag) (#36) by @gmocquet
+
 ## [0.1.1] - 2026-07-13
 
 ### Bug Fixes
