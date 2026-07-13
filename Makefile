@@ -6,7 +6,7 @@
 SHELL := /bin/bash
 .ONESHELL:
 
-.PHONY: help doctor init dev build lint test i18n changelog secrets-pull deploy gh-bootstrap \
+.PHONY: help doctor init dev build lint test i18n changelog next-release-tag secrets-pull deploy gh-bootstrap \
 	repo-settings-token-set repo-settings-token-status repo-settings-token-delete
 
 help: ## List available targets
@@ -33,8 +33,11 @@ test: ## Run tests (per ecosystem)
 i18n: ## Generate FR content from EN via the translation CLI
 	@npm --prefix frontend run i18n
 
-changelog: ## (Re)generate CHANGELOG.md from Conventional Commits
-	@git cliff --output CHANGELOG.md
+changelog: ## (Re)generate CHANGELOG.md (PR/author enriched via GitHub API; needs GH_PAT_TOKEN). TAG=vX.Y.Z for the upcoming release
+	@./scripts/changelog.sh $(TAG)
+
+next-release-tag: ## Print the next release tag from Conventional Commits (empty when nothing to release)
+	@./scripts/next-release-tag.sh
 
 secrets-pull: ## Regenerate the local .env from Infisical (the secrets source of truth)
 	@./scripts/secrets-pull.sh

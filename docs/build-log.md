@@ -188,3 +188,28 @@ A visual pass on the M3 site produced four refinements, delivered as focused PRs
   rights probe lives in `-status`, not `-set`. `-delete` also opens the fine-grained-tokens page to
   revoke the PAT itself (GitHub has no API to delete a user's own PAT); the token is named
   `ci-gh-pat-token-<repo>`.
+
+## 2026-07-13 — Fold the changelog into release-tag (regen + commit before the tag)
+
+- The separate `changelog.yml` (triggered on the `v*` tag) opened a **PR** to update `CHANGELOG.md` on
+  every release — noisy, and it landed *after* the tag, so the tagged/deployed commit never contained
+  its own changelog. Removed it and folded the logic into **`release-tag.yml`**, reordered so the
+  changelog is computed **before** the tag.
+- New flow, one run on push to `main`: compute the next version (`make next-release-tag` →
+  `scripts/next-release-tag.sh`, bats-tested) → regenerate `CHANGELOG.md` for it
+  (`make changelog TAG=…`, git-cliff `--tag`) → **commit it straight to `main` with the automatic
+  `GITHUB_TOKEN`** → create + push the `v*` tag with the fine-grained PAT.
+- Loop safety: a push made with `GITHUB_TOKEN` does **not** start workflow runs (anti-recursion), so
+  the changelog commit never re-triggers `release-tag.yml` — no PR and no `[skip ci]` needed. The tag
+  push uses the PAT (a real identity), so it still triggers `deploy.yml`. The changelog commit is
+  `chore(release): <tag>` (skipped by cliff), and the tag points to it, so the deployed commit now
+  carries its own changelog.
+- Also switched version computation from `anothrNick/github-tag-action` to the repo's own
+  `next-release-tag.sh` (breaking → MAJOR, feat → MINOR, else PATCH), needed to know the version
+  *before* rendering the changelog.
+- Enrichment: git-cliff's GitHub integration (`[remote.github]`) adds each change's **PR number and
+  author** (`(#NN) by @user`), fetched from the API — uniform even when the squash message omitted the
+  `(#NN)`. It runs through `scripts/changelog.sh`, which requires **`GH_PAT_TOKEN`** (the same PAT,
+  now also **Pull requests: Read**) — **no offline fallback**: a missing/under-scoped token fails loudly
+  with the fix (`make repo-settings-token-set`), rather than silently dropping the data. The PAT's
+  pre-filled URL now requests `pull_requests=read`.

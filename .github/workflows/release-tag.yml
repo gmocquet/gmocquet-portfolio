@@ -1,33 +1,75 @@
 name: release-tag
 
-# Based on anothrNick/github-tag-action — doc "example 1" (push to the default branch), adapted to
-# this repo: branch `main`, `v` tag prefix (WITH_V) so the tag matches the deploy `v*` filter, patch
-# bump by default. Actions are SHA-pinned per repo policy.
+# On push to main: regenerate CHANGELOG.md for the upcoming version, commit it to main, then create
+# the release tag — all in one run, changelog BEFORE the tag (no separate changelog workflow, no PR).
 #
-# The tag is pushed with a fine-grained PAT (secrets.GH_PAT_TOKEN, Contents:write) — NOT the
-# automatic GITHUB_TOKEN. GitHub does not start new workflow runs from events created by
-# GITHUB_TOKEN (anti-recursion), so a tag it pushes would never trigger deploy.yml. A push from the
-# PAT's user identity does. Manage the secret with `make repo-settings-gh-pat-token-*`. See ADR 0010.
+# Sequence:
+#   1. Compute the next version from Conventional Commits (scripts/next-release-tag.sh, bats-tested;
+#      breaking -> MAJOR, feat -> MINOR, else PATCH). Stop if nothing is pending.
+#   2. Regenerate CHANGELOG.md for that version (`make changelog TAG=…`, git-cliff).
+#   3. Commit CHANGELOG.md straight to main using the automatic GITHUB_TOKEN. GitHub does NOT start
+#      workflow runs from GITHUB_TOKEN pushes (anti-recursion), so this does not re-trigger this
+#      workflow — no loop, no PR, no `[skip ci]` needed.
+#   4. Create + push the `v*` tag on that commit with the fine-grained PAT (secrets.GH_PAT_TOKEN). A
+#      PAT push is a real identity, so it DOES trigger deploy.yml (on: push tags v*). See ADR 0010.
+#
+# Actions are SHA-pinned per repo policy.
 
 on:
   push:
     branches:
       - main
 
+permissions:
+  contents: write
+
+concurrency:
+  group: release-tag
+  cancel-in-progress: false
+
 jobs:
-  tag:
-    runs-on: ubuntu-22.04
-    permissions:
-      contents: write
+  release:
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
-          fetch-depth: '0'
+          fetch-depth: 0 # full history + tags: version computation and changelog need them
 
-      - name: Bump version and push tag
-        uses: anothrNick/github-tag-action@4ed44965e0db8dab2b466a16da04aec3cc312fd8 # v1.75.0
+      - name: Compute the next release version
+        id: ver
+        run: |
+          tag="$(make --no-print-directory next-release-tag)"
+          echo "tag=${tag}" >> "$GITHUB_OUTPUT"
+          if [ -n "$tag" ]; then echo "Next release: $tag"; else echo "Nothing to release."; fi
+
+      - name: Install git-cliff (pinned)
+        if: steps.ver.outputs.tag != ''
+        run: pipx install git-cliff==2.13.1
+
+      - name: Regenerate CHANGELOG.md for the upcoming tag
+        if: steps.ver.outputs.tag != ''
         env:
-          GITHUB_TOKEN: ${{ secrets.GH_PAT_TOKEN }} # fine-grained PAT so the tag push triggers deploy
-          WITH_V: true
-          RELEASE_BRANCHES: main
-          DEFAULT_BUMP: patch
+          GH_PAT_TOKEN: ${{ secrets.GH_PAT_TOKEN }} # git-cliff reads PR/author from the API (Pull requests: Read)
+        run: make changelog TAG=${{ steps.ver.outputs.tag }}
+
+      - name: Commit CHANGELOG.md to main (GITHUB_TOKEN push — no workflow re-trigger)
+        if: steps.ver.outputs.tag != ''
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add CHANGELOG.md
+          if git diff --cached --quiet; then
+            echo "CHANGELOG.md unchanged — committing nothing."
+          else
+            git commit -m "chore(release): ${{ steps.ver.outputs.tag }}"
+            git push origin HEAD:main
+          fi
+
+      - name: Create and push the tag (PAT push — triggers deploy)
+        if: steps.ver.outputs.tag != ''
+        env:
+          GH_PAT_TOKEN: ${{ secrets.GH_PAT_TOKEN }}
+        run: |
+          tag="${{ steps.ver.outputs.tag }}"
+          git tag "$tag"
+          git push "https://x-access-token:${GH_PAT_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" "$tag"

@@ -36,8 +36,8 @@ urlencode() {
 pat_url() {
   local owner="$1" repo_name="$2" name desc
   name="ci-gh-pat-token-${repo_name}"
-  desc="CI token for ${repo_name}. Used by the release-tag GitHub Actions workflow to push v* release tags so the deploy workflow triggers (the automatic GITHUB_TOKEN cannot trigger downstream workflows). Scope: Contents read and write on ${repo_name} only."
-  printf 'https://github.com/settings/personal-access-tokens/new?name=%s&description=%s&target_name=%s&expires_in=%s&contents=write\n' \
+  desc="CI token for ${repo_name}. Used by the release-tag GitHub Actions workflow to push v* release tags so the deploy workflow triggers (the automatic GITHUB_TOKEN cannot trigger downstream workflows), and by git-cliff to read PR/author data for the changelog. Scope: Contents read and write + Pull requests read on ${repo_name} only."
+  printf 'https://github.com/settings/personal-access-tokens/new?name=%s&description=%s&target_name=%s&expires_in=%s&contents=write&pull_requests=read\n' \
     "$(urlencode "$name")" "$(urlencode "$desc")" "$owner" "$PAT_EXPIRES_IN"
 }
 
@@ -70,10 +70,10 @@ probe_tag_write() {
 cmd_set() {
   local owner="$1" repo="$2" name="${2##*/}"
   echo "==> $SECRET_NAME — fine-grained PAT so CI can push v* release tags that trigger deploy."
-  echo "    Scope: Contents read/write on $repo only. Stored as a GitHub Actions secret."
+  echo "    Scope: Contents read/write + Pull requests read on $repo only. Stored as a GitHub Actions secret."
   echo ""
-  echo "Opening the pre-filled PAT page (name, description, No expiration and Contents: Read and write"
-  echo "are set). GitHub cannot pre-select the repository, so you still need to:"
+  echo "Opening the pre-filled PAT page (name, description, No expiration, Contents: Read and write, and"
+  echo "Pull requests: Read are set). GitHub cannot pre-select the repository, so you still need to:"
   echo "  - set Repository access -> Only select repositories -> $repo"
   echo "  - click Generate token, then copy it."
   echo ""

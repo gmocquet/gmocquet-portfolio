@@ -147,8 +147,9 @@ via Infisical's GitHub Action over **OIDC** (no long-lived secrets in GitHub). S
 `docs/playbook/secrets-infisical.md`.
 
 **One exception** — the `release-tag` workflow needs a **`GH_PAT_TOKEN`** fine-grained PAT
-(Contents:write, this repo only) to push `v*` tags so `deploy` triggers; there is no OIDC path to
-push git tags as a user. It lives as a **GitHub Actions secret**, not in Infisical, and is
+(Contents:write **+ Pull requests:read**, this repo only) to push `v*` tags so `deploy` triggers and
+to let git-cliff read each change's PR/author for the changelog; there is no OIDC path to push git
+tags as a user. It lives as a **GitHub Actions secret**, not in Infisical, and is
 provisioned/rotated reproducibly with `make repo-settings-token-set` (stored via gh's native
 masked prompt). `-status` reports whether the Actions secret exists and points to the PAT in
 Developer settings; given the token (`GH_PAT_TOKEN=<token> make repo-settings-token-status`)
@@ -161,8 +162,10 @@ those steps stay manual. See ADR 0010.
 - **Every change goes through a Pull Request**; direct pushes to `main` are blocked by a local
   `pre-push` hook (`make init`). Server-side enforcement (ruleset) is enabled once the repo is public
   or on GitHub Pro — `make gh-bootstrap` provisions it automatically when available.
-- **Conventional Commits** drive automated **semver tagging** (on push to `main`) and the generated
-  **`CHANGELOG.md`** (on tag). See `.github/workflows/`.
+- **Conventional Commits** drive the release pipeline: on push to `main`, `release-tag.yml`
+  regenerates **`CHANGELOG.md`** (git-cliff), commits it straight to `main` (via `GITHUB_TOKEN`, which
+  does not re-trigger workflows), then creates the **semver `v*` tag** — which triggers `deploy.yml`.
+  See `.github/workflows/`.
 - Spec-driven: new capabilities start as an **OpenSpec** change proposal under `openspec/`.
 
 ## License
