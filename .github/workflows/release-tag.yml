@@ -1,19 +1,21 @@
 name: release-tag
 
-# On push to main: regenerate CHANGELOG.md for the upcoming version, commit it to main, then create
-# the release tag — all in one run, changelog BEFORE the tag (no separate changelog workflow, no PR).
+# On push to main, one purpose per job (two visible jobs), changelog BEFORE the tag:
 #
-# Sequence:
-#   1. Compute the next version from Conventional Commits (scripts/next-release-tag.sh, bats-tested;
-#      breaking -> MAJOR, feat -> MINOR, else PATCH). Stop if nothing is pending.
-#   2. Regenerate CHANGELOG.md for that version (`make changelog TAG=…`, git-cliff).
-#   3. Commit CHANGELOG.md straight to main using the automatic GITHUB_TOKEN. GitHub does NOT start
-#      workflow runs from GITHUB_TOKEN pushes (anti-recursion), so this does not re-trigger this
-#      workflow — no loop, no PR, no `[skip ci]` needed.
-#   4. Create + push the `v*` tag on that commit with the fine-grained PAT (secrets.GH_PAT_TOKEN). A
-#      PAT push is a real identity, so it DOES trigger deploy.yml (on: push tags v*). See ADR 0010.
+#   job `changelog` — compute the next version from Conventional Commits (scripts/next-release-tag.sh;
+#     breaking → MAJOR, feat → MINOR, else PATCH), regenerate CHANGELOG.md for it (git-cliff, PR/author
+#     enriched via the API using GH_PAT_TOKEN), and commit it straight to main with the automatic
+#     GITHUB_TOKEN. GitHub does NOT start workflow runs from GITHUB_TOKEN pushes (anti-recursion), so
+#     this never re-triggers the workflow — no loop, no PR, no `[skip ci]`. Outputs the version and the
+#     commit SHA to tag. Stops (empty output) when nothing is pending.
 #
-# Actions are SHA-pinned per repo policy.
+#   job `tag` — needs `changelog` and runs ONLY if it succeeded and produced a version. Creates and
+#     pushes the v* tag on that SHA with the fine-grained PAT (GH_PAT_TOKEN). A PAT push is a real
+#     identity, so it triggers deploy.yml (on: push tags v*). See ADR 0010.
+#
+# `persist-credentials: false` is required: otherwise actions/checkout leaves a GITHUB_TOKEN
+# http.extraheader that overrides the PAT in the tag-push URL (the tag would push as GITHUB_TOKEN and
+# never trigger deploy). Actions are SHA-pinned per repo policy.
 
 on:
   push:
@@ -28,15 +30,16 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  release:
+  changelog:
     runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.ver.outputs.tag }}
+      sha: ${{ steps.cl.outputs.sha }}
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           fetch-depth: 0 # full history + tags: version computation and changelog need them
-          persist-credentials: false # else checkout leaves a GITHUB_TOKEN http.extraheader that
-          # overrides the PAT in the tag-push URL — the tag would push as GITHUB_TOKEN and NOT trigger
-          # deploy. With no persisted creds, each push below authenticates via its own explicit URL.
+          persist-credentials: false # no GITHUB_TOKEN extraheader; each push uses its explicit URL
 
       - name: Compute the next release version
         id: ver
@@ -49,17 +52,14 @@ jobs:
         if: steps.ver.outputs.tag != ''
         run: pipx install git-cliff==2.13.1
 
-      - name: Regenerate CHANGELOG.md for the upcoming tag
+      - name: Update CHANGELOG.md and push it to main (GITHUB_TOKEN — no workflow re-trigger)
+        id: cl
         if: steps.ver.outputs.tag != ''
         env:
           GH_PAT_TOKEN: ${{ secrets.GH_PAT_TOKEN }} # git-cliff reads PR/author from the API (Pull requests: Read)
-        run: make changelog TAG=${{ steps.ver.outputs.tag }}
-
-      - name: Commit CHANGELOG.md to main (GITHUB_TOKEN push — no workflow re-trigger)
-        if: steps.ver.outputs.tag != ''
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # push identity that does not re-trigger this workflow
         run: |
+          make changelog TAG=${{ steps.ver.outputs.tag }}
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add CHANGELOG.md
@@ -69,12 +69,22 @@ jobs:
             git commit -m "chore(release): ${{ steps.ver.outputs.tag }}"
             git push "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" HEAD:main
           fi
+          echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
+  tag:
+    needs: changelog
+    if: needs.changelog.outputs.tag != '' # only when `changelog` succeeded and produced a version
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          ref: ${{ needs.changelog.outputs.sha }} # the commit the changelog job left on main
+          persist-credentials: false
 
       - name: Create and push the tag (PAT push — triggers deploy)
-        if: steps.ver.outputs.tag != ''
         env:
           GH_PAT_TOKEN: ${{ secrets.GH_PAT_TOKEN }}
         run: |
-          tag="${{ steps.ver.outputs.tag }}"
+          tag="${{ needs.changelog.outputs.tag }}"
           git tag "$tag"
           git push "https://x-access-token:${GH_PAT_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" "$tag"

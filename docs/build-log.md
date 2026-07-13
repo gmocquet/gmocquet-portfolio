@@ -213,3 +213,14 @@ A visual pass on the M3 site produced four refinements, delivered as focused PRs
   now also **Pull requests: Read**) — **no offline fallback**: a missing/under-scoped token fails loudly
   with the fix (`make repo-settings-token-set`), rather than silently dropping the data. The PAT's
   pre-filled URL now requests `pull_requests=read`.
+
+## 2026-07-13 — Split release-tag into two jobs (changelog, then tag)
+
+- `release-tag.yml` now has **one job per purpose** instead of a single `release` job: job **`changelog`**
+  (compute version → regenerate + commit + push `CHANGELOG.md`, outputs the version and the commit SHA)
+  and job **`tag`** (`needs: changelog`, runs only if it succeeded and produced a version — creates and
+  pushes the `v*` tag on that SHA with the PAT → triggers `deploy`). Clearer run graph and a hard gate:
+  no tag unless the changelog job succeeded.
+- Earlier same-day fix carried over: `persist-credentials: false` on checkout — otherwise the
+  GITHUB_TOKEN `http.extraheader` overrides the PAT in the tag-push URL, so the tag pushes as
+  GITHUB_TOKEN and never triggers `deploy` (it happened on `v0.1.0`; fixed, `v0.1.1` deployed).
