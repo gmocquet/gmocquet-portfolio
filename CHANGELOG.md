@@ -1,6 +1,11 @@
 # Changelog
 
 All notable changes to this project are documented here.
+## [0.1.1] - 2026-07-13
+
+### Bug Fixes
+- *(ci)* Push the release tag as the PAT so deploy triggers (#35) by @gmocquet
+
 ## [0.1.0] - 2026-07-13
 
 ### Features
