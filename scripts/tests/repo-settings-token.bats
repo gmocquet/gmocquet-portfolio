@@ -44,6 +44,7 @@ STUB_EOF
   [[ "$output" == *"target_name=gmocquet"* ]]
   [[ "$output" == *"expires_in=none"* ]]
   [[ "$output" == *"contents=write"* ]]
+  [[ "$output" == *"pull_requests=read"* ]]
 }
 
 @test "pat_url honours the PAT_EXPIRES_IN override" {

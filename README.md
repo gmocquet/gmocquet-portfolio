@@ -147,8 +147,9 @@ via Infisical's GitHub Action over **OIDC** (no long-lived secrets in GitHub). S
 `docs/playbook/secrets-infisical.md`.
 
 **One exception** — the `release-tag` workflow needs a **`GH_PAT_TOKEN`** fine-grained PAT
-(Contents:write, this repo only) to push `v*` tags so `deploy` triggers; there is no OIDC path to
-push git tags as a user. It lives as a **GitHub Actions secret**, not in Infisical, and is
+(Contents:write **+ Pull requests:read**, this repo only) to push `v*` tags so `deploy` triggers and
+to let git-cliff read each change's PR/author for the changelog; there is no OIDC path to push git
+tags as a user. It lives as a **GitHub Actions secret**, not in Infisical, and is
 provisioned/rotated reproducibly with `make repo-settings-token-set` (stored via gh's native
 masked prompt). `-status` reports whether the Actions secret exists and points to the PAT in
 Developer settings; given the token (`GH_PAT_TOKEN=<token> make repo-settings-token-status`)

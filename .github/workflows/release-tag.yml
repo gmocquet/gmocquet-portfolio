@@ -48,6 +48,8 @@ jobs:
 
       - name: Regenerate CHANGELOG.md for the upcoming tag
         if: steps.ver.outputs.tag != ''
+        env:
+          GH_PAT_TOKEN: ${{ secrets.GH_PAT_TOKEN }} # git-cliff reads PR/author from the API (Pull requests: Read)
         run: make changelog TAG=${{ steps.ver.outputs.tag }}
 
       - name: Commit CHANGELOG.md to main (GITHUB_TOKEN push — no workflow re-trigger)

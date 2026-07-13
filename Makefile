@@ -33,8 +33,8 @@ test: ## Run tests (per ecosystem)
 i18n: ## Generate FR content from EN via the translation CLI
 	@npm --prefix frontend run i18n
 
-changelog: ## (Re)generate CHANGELOG.md from Conventional Commits (pass TAG=vX.Y.Z to include the upcoming release)
-	@git cliff $(if $(TAG),--tag $(TAG)) --output CHANGELOG.md
+changelog: ## (Re)generate CHANGELOG.md (PR/author enriched via GitHub API; needs GH_PAT_TOKEN). TAG=vX.Y.Z for the upcoming release
+	@./scripts/changelog.sh $(TAG)
 
 next-release-tag: ## Print the next release tag from Conventional Commits (empty when nothing to release)
 	@./scripts/next-release-tag.sh

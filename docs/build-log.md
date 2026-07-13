@@ -207,3 +207,9 @@ A visual pass on the M3 site produced four refinements, delivered as focused PRs
 - Also switched version computation from `anothrNick/github-tag-action` to the repo's own
   `next-release-tag.sh` (breaking → MAJOR, feat → MINOR, else PATCH), needed to know the version
   *before* rendering the changelog.
+- Enrichment: git-cliff's GitHub integration (`[remote.github]`) adds each change's **PR number and
+  author** (`(#NN) by @user`), fetched from the API — uniform even when the squash message omitted the
+  `(#NN)`. It runs through `scripts/changelog.sh`, which requires **`GH_PAT_TOKEN`** (the same PAT,
+  now also **Pull requests: Read**) — **no offline fallback**: a missing/under-scoped token fails loudly
+  with the fix (`make repo-settings-token-set`), rather than silently dropping the data. The PAT's
+  pre-filled URL now requests `pull_requests=read`.

@@ -26,13 +26,15 @@ Options weighed to make the tag push trigger `deploy`:
 ## Decision
 
 **`release-tag.yml` pushes the `v*` tag with a fine-grained PAT** — `secrets.GH_PAT_TOKEN`, scope
-**Contents: Read and write on this repo only**, and **No expiration by default**
+**Contents: Read and write + Pull requests: Read on this repo only** (Contents to push tags; Pull
+requests so git-cliff can read PR/author for the changelog), and **No expiration by default**
 (`PAT_EXPIRES_IN=none`, matching neo; set `PAT_EXPIRES_IN=<days>` for a bounded expiry).
 `deploy.yml` is unchanged (`on: push: tags: v*`).
 
 - **Stored as a GitHub Actions secret** (not Infisical), managed reproducibly by
   `make repo-settings-token-{set,status,delete}` → `scripts/repo-settings-token.sh`.
-  `-set` opens the **pre-filled** fine-grained-PAT page (name, description, expiry, Contents:write —
+  `-set` opens the **pre-filled** fine-grained-PAT page (name, description, expiry, Contents:write,
+  Pull requests:read —
   the user only picks the repository, which GitHub cannot pre-select) and stores the pasted token via
   `gh secret set`'s **native prompt** (masked input, no plaintext, `✓` on success). A stored Actions
   secret is **write-only**, and gh's prompt hands the token straight to GitHub, so a token's rights

@@ -14,7 +14,9 @@ body = """
 {% for group, commits in commits | group_by(attribute="group") %}
 ### {{ group | striptags | trim | upper_first }}
 {% for commit in commits %}\
-- {% if commit.scope %}*({{ commit.scope }})* {% endif %}{{ commit.message | upper_first }}
+- {% if commit.scope %}*({{ commit.scope }})* {% endif %}{{ commit.message | upper_first }}\
+{% if commit.remote.pr_number %} (#{{ commit.remote.pr_number }}){% endif %}\
+{% if commit.remote.username %} by @{{ commit.remote.username }}{% endif %}
 {% endfor %}\
 {% endfor %}\n
 """
@@ -22,6 +24,8 @@ trim = true
 footer = ""
 
 [git]
+# Strip an inline "(#NN)" already in a message so the GitHub enrichment below adds it uniformly.
+commit_preprocessors = [{ pattern = '\s*\(#[0-9]+\)', replace = "" }]
 conventional_commits = true
 filter_unconventional = true
 split_commits = false
@@ -45,3 +49,9 @@ commit_parsers = [
   { body = ".*security", group = "<!-- 9 -->Security" },
   { message = ".*", group = "<!-- 10 -->Other" },
 ]
+
+# Enrich each entry with its PR number and author, fetched from the GitHub API. Requires a token
+# (GH_PAT_TOKEN, Pull requests: Read) — passed by scripts/changelog.sh via `--github-token`.
+[remote.github]
+owner = "gmocquet"
+repo = "gmocquet-portfolio"
