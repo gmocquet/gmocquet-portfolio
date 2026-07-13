@@ -23,6 +23,6 @@ Generalized recipe to recreate this project's foundation elsewhere.
 ## 4. Governance & automation
 
 1. `gh`-scripted: private repo, milestones, labels, issues, project board, `main` protection (PR-only).
-2. Conventional Commits → `release-tag.yml` (semver tag on push to main) → `changelog.yml`
-   (`CHANGELOG.md` via git-cliff on tag).
+2. Conventional Commits → `release-tag.yml` (on push to main: regenerate `CHANGELOG.md` via
+   git-cliff, commit it to main, then create the semver `v*` tag) → `deploy.yml` (on the tag).
 3. Spec-driven changes under `openspec/`.

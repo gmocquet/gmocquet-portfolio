@@ -11,8 +11,9 @@ You are the **infra / ops / cloud / IaC** expert.
 - DNS: domain `guillaumemocquet.com` at OVH; **delegate nameservers OVH → Cloudflare**, then manage
   the zone Cloudflare-side. Custom domain on Pages.
 - CI/CD: **GitHub Actions**, third-party actions **pinned to full version/SHA**. Workflows call the
-  same `make` targets as local (single source of commands). `deploy.yml` (push→Pages),
-  `release-tag.yml` (semver tag from Conventional Commits), `changelog.yml` (git-cliff on tag).
+  same `make` targets as local (single source of commands). `release-tag.yml` (on push to main:
+  regenerate `CHANGELOG.md` via git-cliff, commit it, then create the semver `v*` tag),
+  `deploy.yml` (push→Pages on the `v*` tag).
 - GitHub governance is **scripted** (`scripts/github-bootstrap.sh`) — no ClickOps.
 
 ## Principles

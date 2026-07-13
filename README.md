@@ -161,8 +161,10 @@ those steps stay manual. See ADR 0010.
 - **Every change goes through a Pull Request**; direct pushes to `main` are blocked by a local
   `pre-push` hook (`make init`). Server-side enforcement (ruleset) is enabled once the repo is public
   or on GitHub Pro — `make gh-bootstrap` provisions it automatically when available.
-- **Conventional Commits** drive automated **semver tagging** (on push to `main`) and the generated
-  **`CHANGELOG.md`** (on tag). See `.github/workflows/`.
+- **Conventional Commits** drive the release pipeline: on push to `main`, `release-tag.yml`
+  regenerates **`CHANGELOG.md`** (git-cliff), commits it straight to `main` (via `GITHUB_TOKEN`, which
+  does not re-trigger workflows), then creates the **semver `v*` tag** — which triggers `deploy.yml`.
+  See `.github/workflows/`.
 - Spec-driven: new capabilities start as an **OpenSpec** change proposal under `openspec/`.
 
 ## License
