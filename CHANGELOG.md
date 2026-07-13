@@ -1,13 +1,10 @@
 # Changelog
 
 All notable changes to this project are documented here.
-## [unreleased]
+## [0.1.0] - 2026-07-13
 
 ### Features
-- *(ci)* Fold the changelog into release-tag (regenerate + commit before the tag)
-
-### Documentation
-- *(changelog)* Initialize CHANGELOG.md from the release tag history (v0.0.1..v0.0.10)
+- *(ci)* Fold the changelog into release-tag (regenerate + commit before the tag) (#34) by @gmocquet
 
 ## [0.0.10] - 2026-07-13
 
