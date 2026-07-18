@@ -58,4 +58,7 @@ integrates.
   `prod` for CI) as the single source of truth; generate the local `.env` with `make secrets-pull`
   (pulls `dev` by default; gitignored, loaded by direnv), never hand-write or commit it. CI fetches
   the `prod` secrets via OIDC. See ADR 0009 and `docs/playbook/secrets-infisical.md`.
+- **Secret scanning (defense-in-depth)** — `gitleaks` scans staged changes in the pre-commit hook and
+  the full history in CI (`make secret-scan`), independent of repo visibility. GitHub's native scanning
+  is free only once public; enable it then (two-command runbook in ADR 0011).
 - Definition of Done: tests pass, docs/specs updated (incl. `README.md`), lint/format/hooks clean.

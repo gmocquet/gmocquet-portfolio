@@ -74,6 +74,7 @@ Global tooling for macOS — install [Homebrew](https://brew.sh) first, then eac
 | **openspec** | spec-driven workflow CLI | `brew install openspec` |
 | **tenv** | Terraform/OpenTofu version manager (later lots) | `brew install tenv` |
 | **git-filter-repo** | git history rewrites (e.g. purge a committed file from history) | `brew install git-filter-repo` |
+| **gitleaks** | secret scanning — pre-commit hook + CI (`make secret-scan`) | `brew install gitleaks` |
 | **infisical** | secrets source of truth (generate `.env`, CI) | `brew install infisical/get-cli/infisical` |
 
 **Project dev tools are NOT global** — they are pinned dev dependencies installed by `make init`:
@@ -162,6 +163,11 @@ those steps stay manual. See ADR 0010.
 - **Every change goes through a Pull Request**; direct pushes to `main` are blocked by a local
   `pre-push` hook (`make init`). Server-side enforcement (ruleset) is enabled once the repo is public
   or on GitHub Pro — `make gh-bootstrap` provisions it automatically when available.
+- **Secret scanning (defense-in-depth)** — `gitleaks` runs on **staged changes** in the pre-commit
+  hook and over the **full history** in CI (`.github/workflows/security.yml`, `make secret-scan`), so
+  a leak is caught before it lands even while the repo is private (GitHub's native scanning is free
+  only on public repos). Going public later enables native scanning + push protection on top — see
+  ADR 0011 for the two-command runbook.
 - **Conventional Commits** drive the release pipeline: on push to `main`, `release-tag.yml`
   regenerates **`CHANGELOG.md`** (git-cliff), commits it straight to `main` (via `GITHUB_TOKEN`, which
   does not re-trigger workflows), then creates the **semver `v*` tag** — which triggers `deploy.yml`.

@@ -15,6 +15,7 @@ with a new ADR rather than editing an old one. Format: Context → Decision → 
 - [0008 — Remote OpenTofu state in Cloudflare R2 (private, no passphrase)](0008-remote-state-cloudflare-r2.md)
 - [0009 — Application secrets in Infisical (single source of truth; .env generated, CI via OIDC)](0009-secrets-management-infisical.md)
 - [0010 — Release tags pushed with a fine-grained PAT (so `deploy` triggers)](0010-repo-settings-token.md)
+- [0011 — Secret scanning: defense-in-depth with gitleaks (works while private)](0011-secret-scanning-defense-in-depth.md)
 
 ## Adding an ADR
 

@@ -36,6 +36,7 @@ main() {
 
   section "Tools (recommended, global via Homebrew)"
   check_optional git-cliff "brew install git-cliff — local CHANGELOG generation"
+  check_optional gitleaks  "brew install gitleaks — secret scanning (pre-commit hook + CI)"
   check_optional bats      "brew install bats-core — Bash unit tests"
   check_optional openspec  "brew install openspec — spec-driven workflow"
   check_optional tenv      "brew install tenv — Terraform/OpenTofu (later lots)"

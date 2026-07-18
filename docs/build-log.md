@@ -224,3 +224,21 @@ A visual pass on the M3 site produced four refinements, delivered as focused PRs
 - Earlier same-day fix carried over: `persist-credentials: false` on checkout — otherwise the
   GITHUB_TOKEN `http.extraheader` overrides the PAT in the tag-push URL, so the tag pushes as
   GITHUB_TOKEN and never triggers `deploy` (it happened on `v0.1.0`; fixed, `v0.1.1` deployed).
+
+## 2026-07-18 — Secret scanning: defense-in-depth with gitleaks (ADR 0011)
+
+- Preparing the repo to go **public**. Audited the whole history first (all 53 commits, every ref):
+  `gitleaks` found no leaks; no real `.env` / `*.tfstate` / `terraform.tfvars` / private key was ever
+  committed; the sensitive-named files are placeholders (`.env.example`, `terraform.tfvars.example`),
+  an Infisical **project id** (`.infisical.json`), or public DNS records (`infra/`).
+- GitHub's native **secret scanning** is free only on **public** repos — on this private personal repo
+  the API returns `422 — Secret scanning is not available for this repository`. So added a guard that
+  does not depend on visibility.
+- `scripts/secret-scan.sh` (bats-tested) wraps gitleaks with two modes: **full history**
+  (`git --log-opts=--all`, used by `make secret-scan` and CI) and **`--staged`** (pre-commit). A
+  missing gitleaks **skips** locally (never blocks a commit); CI enforces it on a **pinned** 8.30.1.
+- The pre-commit hook (`make init`) now runs `lint.sh --staged` **then** `secret-scan.sh --staged`.
+  New `.github/workflows/security.yml` runs `make secret-scan` on push-to-`main` + PRs with a full
+  checkout (`fetch-depth: 0`) — catching anything pushed with `--no-verify`.
+- `gitleaks` added to `make doctor` (recommended global) and the README requirements. The day-of-
+  publication runbook (flip visibility + enable native scanning & push protection) lives in ADR 0011.

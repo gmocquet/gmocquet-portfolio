@@ -20,11 +20,16 @@ else
   note "backend: not scaffolded yet — skipping"
 fi
 
-# Single git hook delegating to scripts/lint.sh, which applies each ecosystem's
-# .pre-commit-config.yaml explicitly (one config per ecosystem, one entry point).
-note "installing pre-commit git hook -> scripts/lint.sh"
+# Single git hook delegating to scripts/lint.sh (per-ecosystem format/lint) then scripts/secret-scan.sh
+# (repo-wide gitleaks on staged changes) — both scoped to staged files. A leak or a lint failure
+# blocks the commit; a missing gitleaks skips the scan (CI enforces it on a pinned version).
+note "installing pre-commit git hook -> scripts/lint.sh + scripts/secret-scan.sh"
 hook=".git/hooks/pre-commit"
-printf '#!/usr/bin/env bash\nexec "$(git rev-parse --show-toplevel)/scripts/lint.sh" --staged\n' > "$hook"
+cat > "$hook" <<'HOOK'
+#!/usr/bin/env bash
+root="$(git rev-parse --show-toplevel)"
+"$root/scripts/lint.sh" --staged && "$root/scripts/secret-scan.sh" --staged
+HOOK
 chmod +x "$hook"
 
 # Client-side PR-only guard: block direct pushes to main (server-side protection needs a public

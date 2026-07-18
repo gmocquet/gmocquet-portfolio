@@ -6,7 +6,7 @@
 SHELL := /bin/bash
 .ONESHELL:
 
-.PHONY: help doctor init dev build lint test i18n changelog next-release-tag secrets-pull deploy gh-bootstrap \
+.PHONY: help doctor init dev build lint test secret-scan i18n changelog next-release-tag secrets-pull deploy gh-bootstrap \
 	repo-settings-token-set repo-settings-token-status repo-settings-token-delete
 
 help: ## List available targets
@@ -29,6 +29,9 @@ lint: ## Auto-format + lint + pre-commit checks (per ecosystem)
 
 test: ## Run tests (per ecosystem)
 	@./scripts/test.sh
+
+secret-scan: ## Scan the whole git history for secrets (gitleaks); the pre-commit hook runs the --staged variant
+	@./scripts/secret-scan.sh
 
 i18n: ## Generate FR content from EN via the translation CLI
 	@npm --prefix frontend run i18n
