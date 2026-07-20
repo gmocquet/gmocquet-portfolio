@@ -1,6 +1,11 @@
 # Changelog
 
 All notable changes to this project are documented here.
+## [0.1.3] - 2026-07-20
+
+### Chore
+- *(security)* Add gitleaks secret scanning (pre-commit + CI) by @gmocquet
+
 ## [0.1.2] - 2026-07-13
 
 ### Refactor
