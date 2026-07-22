@@ -1,6 +1,7 @@
 # guillaumemocquet.com — Portfolio
 
-Professional portfolio of **Guillaume Mocquet**, built and operated as a reproducible,
+Professional portfolio of **Guillaume Mocquet** — live at
+[guillaumemocquet.com](https://www.guillaumemocquet.com) — built and operated as a reproducible,
 agentic-coding reference project.
 
 > This `README.md` is the **single source of business context**. It is imported into the assistant
