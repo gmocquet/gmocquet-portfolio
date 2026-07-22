@@ -1,7 +1,13 @@
 # Changelog
 
 All notable changes to this project are documented here.
-## [0.1.3] - 2026-07-20
+## [0.2.0] - 2026-07-22
+
+### Features
+- *(projects)* Embed chapter 3 PDF and talk video on the white paper page (#39) by @gmocquet
+
+### Bug Fixes
+- *(ci)* Push the changelog commit with the PAT to pass the main ruleset (#40) by @gmocquet
 
 ### Chore
 - *(security)* Add gitleaks secret scanning (pre-commit + CI) by @gmocquet
