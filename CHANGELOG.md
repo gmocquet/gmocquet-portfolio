@@ -1,6 +1,11 @@
 # Changelog
 
 All notable changes to this project are documented here.
+## [0.2.1] - 2026-07-22
+
+### Chore
+- *(governance)* Converge the main ruleset from github-bootstrap (#41) by @gmocquet
+
 ## [0.2.0] - 2026-07-22
 
 ### Features
