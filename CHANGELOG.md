@@ -1,6 +1,11 @@
 # Changelog
 
 All notable changes to this project are documented here.
+## [0.2.2] - 2026-07-22
+
+### Documentation
+- *(readme)* State the public all-rights-reserved license (#42) by @gmocquet
+
 ## [0.2.1] - 2026-07-22
 
 ### Chore
