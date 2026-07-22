@@ -1,6 +1,11 @@
 # Changelog
 
 All notable changes to this project are documented here.
+## [0.4.0] - 2026-07-22
+
+### Features
+- *(ui)* Seek the embedded player from timecode clicks (#45) by @gmocquet
+
 ## [0.3.0] - 2026-07-22
 
 ### Features
