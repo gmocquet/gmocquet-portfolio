@@ -1,6 +1,11 @@
 # Changelog
 
 All notable changes to this project are documented here.
+## [0.7.0] - 2026-07-22
+
+### Features
+- *(site)* Link the source repository from the header and footer (#49) by @gmocquet
+
 ## [0.6.0] - 2026-07-22
 
 ### Features
