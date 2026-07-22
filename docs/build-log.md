@@ -255,3 +255,11 @@ A visual pass on the M3 site produced four refinements, delivered as focused PRs
   as a client-only island (PDF.js needs browser APIs).
 - Native browser PDF embedding and PDF.js were weighed; PDF.js won for identical rendering across
   browsers, including mobile (iOS Safari cannot scroll inline native PDF embeds).
+
+## 2026-07-22 — Kpler page: video start time + notable timecodes (add-media-timecodes)
+
+- The ARTE documentary on the Kpler page now starts at 17:14 (the EIA & drone data passage) and
+  lists grouped notable moments below the player, each linking to the video at that moment.
+- Content stays data: `media` gains optional `start` and `timecodes` (grouped like the experiences
+  `highlights`); `toEmbedUrl` honors `start` (YouTube `?start=`, Vimeo `#t=`), and the new
+  content-agnostic `MediaTimecodes` block renders the groups. Helpers unit-tested.
