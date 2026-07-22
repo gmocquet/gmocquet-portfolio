@@ -1,6 +1,11 @@
 # Changelog
 
 All notable changes to this project are documented here.
+## [0.3.0] - 2026-07-22
+
+### Features
+- *(projects)* Start the Kpler documentary at 17:14 and list notable timecodes (#44) by @gmocquet
+
 ## [0.2.5] - 2026-07-22
 
 ### Documentation
