@@ -78,7 +78,7 @@ const { sections, links } = partitionMedia(p.media);
               ) : (
                 <PdfEmbed client:only="react" media={m} />
               )}
-              <MediaTimecodes media={m} />
+              <MediaTimecodes client:visible media={m} />
             </section>
           ))}
         </div>
