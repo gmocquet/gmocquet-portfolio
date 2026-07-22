@@ -53,7 +53,12 @@ export function toEmbedUrl(media: MediaLink): string | null {
   if (media.kind === "youtube") {
     const id = youTubeId(url);
     if (!id) return null;
-    return `https://www.youtube-nocookie.com/embed/${id}${start ? `?start=${start}` : ""}`;
+    const params = [
+      ...(start ? [`start=${start}`] : []),
+      // Timecode clicks drive the player through the postMessage API — it must be enabled.
+      ...(media.timecodes?.length ? ["enablejsapi=1"] : []),
+    ];
+    return `https://www.youtube-nocookie.com/embed/${id}${params.length ? `?${params.join("&")}` : ""}`;
   }
   if (media.kind === "vimeo") {
     const embed = vimeoEmbed(url);

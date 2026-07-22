@@ -51,6 +51,13 @@ describe("toEmbedUrl", () => {
       toEmbedUrl({ ...link("https://youtu.be/dQw4w9WgXcQ", "youtube"), start: "1:00:05" }),
     ).toBe("https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ?start=3605");
   });
+
+  it("enables the YouTube JS API when the media lists timecodes", () => {
+    const timecodes = [{ items: [{ at: "01:00", label: "intro" }] }];
+    expect(
+      toEmbedUrl({ ...link("https://youtu.be/dQw4w9WgXcQ", "youtube"), start: "01:30", timecodes }),
+    ).toBe("https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ?start=90&enablejsapi=1");
+  });
 });
 
 describe("timecodeToSeconds", () => {
