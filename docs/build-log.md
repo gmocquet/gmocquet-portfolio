@@ -242,3 +242,16 @@ A visual pass on the M3 site produced four refinements, delivered as focused PRs
   checkout (`fetch-depth: 0`) — catching anything pushed with `--no-verify`.
 - `gitleaks` added to `make doctor` (recommended global) and the README requirements. The day-of-
   publication runbook (flip visibility + enable native scanning & push protection) lives in ADR 0011.
+
+## 2026-07-22 — White paper page: inline PDF reader + talk (add-project-pdf-embed)
+
+- The Quantmetry white paper page now embeds chapter 3 as an inline PDF.js reader (`react-pdf`,
+  pinned 10.4.1) instead of a bare link, with the full white paper (14 MB) linked at the end of the
+  chapter description, and the 20-minute companion talk embedded below (existing
+  `youtube-nocookie` player).
+- Content stays data: `media` entries gain optional `description` / `embed` / `fullVersion` fields
+  (Zod + `MediaLink` contract); the detail page renders embeddable media as ordered sections via a
+  tested `partitionMedia` helper. New content-agnostic `PdfEmbed` block in `@gmocquet/ui`, mounted
+  as a client-only island (PDF.js needs browser APIs).
+- Native browser PDF embedding and PDF.js were weighed; PDF.js won for identical rendering across
+  browsers, including mobile (iOS Safari cannot scroll inline native PDF embeds).
