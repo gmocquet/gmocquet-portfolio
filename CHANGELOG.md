@@ -1,6 +1,11 @@
 # Changelog
 
 All notable changes to this project are documented here.
+## [0.2.5] - 2026-07-22
+
+### Documentation
+- *(readme)* Link the live site from the intro (#43) by @gmocquet
+
 ## [0.2.4] - 2026-07-22
 
 ### Chore
