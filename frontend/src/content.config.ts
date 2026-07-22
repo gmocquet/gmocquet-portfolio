@@ -104,6 +104,18 @@ const projects = defineCollection({
     outcomes: z.array(z.string()).default([]),
     stack: z.array(z.string()).default([]),
     media: z.array(mediaLink).default([]),
+    // Titled page sections, auto-numbered from array order; body paragraphs, illustration and
+    // media are all optional.
+    sections: z
+      .array(
+        z.object({
+          title: z.string(),
+          body: z.array(z.string()).default([]), // paragraphs
+          image: z.object({ src: mediaUrl, alt: z.string() }).optional(),
+          media: z.array(mediaLink).default([]),
+        }),
+      )
+      .default([]),
     featured: z.boolean().default(false),
   }),
 });

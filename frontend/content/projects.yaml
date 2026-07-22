@@ -15,28 +15,45 @@
     - In-house framework of shared modules (helpers, observability, alerting) with standardized SDLC.
     - "\"You build it, you run it\": data scientists owned their use cases in production, on-call included."
   stack: [AWS, EKS, Terraform, Airflow, GitHub Actions, Helm, Aurora PostgreSQL, Elasticsearch, MLOps]
-  media:
-    - label: "ARTE — Planète finance: la course aux matières premières (2022)"
-      url: https://vimeo.com/930397924
-      kind: vimeo
-      start: "17:14"
-      timecodes:
-        - group: Main interesting timecode
-          items:
-            - at: "17:14"
-              label: EIA & drone data analyses
-        - group: Interesting timecodes
-          items:
-            - at: "09:45"
-              label: Presentation of Cushing (Oklahoma, USA) and crude oil relationship with trading
-            - at: "12:20"
-              label: Presentation of the drone pilot
-            - at: "14:20"
-              label: Tank images, data & customers
-            - at: "17:14"
-              label: EIA & drone data analyses
-            - at: "29:35"
-              label: Drone pilot feeling for the 20th April 2020 crude oil trading day
+  sections:
+    - title: Product Estimation
+      body:
+        - Coming soon.
+    - title: Destination Forecast
+      body:
+        - Coming soon.
+    - title: Cushing drone inventories
+      body:
+        - >-
+          Access drone-captured infrared and optical imagery three times per week for a detailed
+          overview of Cushing terminal inventory.
+        - Access Cushing data ahead of EIA's official figures.
+        - Receive the fastest turnaround time in the market to gain a competitive advantage.
+      image:
+        src: /assets/kpler-cushing-drone-inventories.webp
+        alt: Aerial drone view of the Cushing terminal crude oil tank farm
+      media:
+        - label: "ARTE — Planète finance: la course aux matières premières (2022)"
+          url: https://vimeo.com/930397924
+          kind: vimeo
+          start: "17:14"
+          timecodes:
+            - group: Main interesting timecode
+              items:
+                - at: "17:14"
+                  label: EIA & drone data analyses
+            - group: Interesting timecodes
+              items:
+                - at: "09:45"
+                  label: Presentation of Cushing (Oklahoma, USA) and crude oil relationship with trading
+                - at: "12:20"
+                  label: Presentation of the drone pilot
+                - at: "14:20"
+                  label: Tank images, data & customers
+                - at: "17:14"
+                  label: EIA & drone data analyses
+                - at: "29:35"
+                  label: Drone pilot feeling for the 20th April 2020 crude oil trading day
   featured: true
 
 - id: quantmetry-mlops-white-paper
