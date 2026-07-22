@@ -32,11 +32,21 @@
       image:
         src: /assets/kpler-cushing-drone-inventories.webp
         alt: Aerial drone view of the Cushing terminal crude oil tank farm
+      source: "https://www.kpler.com/product/commodities/inventories-analytics#Cushing-Drone"
       media:
         - label: "ARTE — Planète finance: la course aux matières premières (2022)"
           url: https://vimeo.com/930397924
           kind: vimeo
+          source: https://www.arte.tv/fr/videos/098820-000-A/planete-finance/
           start: "17:14"
+          description: >-
+            ARTE's documentary "Planète finance — La course aux matières premières" (Marije
+            Meerman, 2022, 53 min, in French) dissects how financial markets price commodities —
+            down to the 2020 crash that briefly pushed the US crude barrel below zero, with
+            Cushing's saturated tanks at the center of the storm. The episode features the
+            drone-inventory intelligence presented above: the imagery and data Kpler turns into
+            tradable insight ahead of EIA's official figures, powered by the platform work behind
+            this project.
           timecodes:
             - group: Main interesting timecode
               items:
