@@ -1,6 +1,11 @@
 # Changelog
 
 All notable changes to this project are documented here.
+## [0.5.0] - 2026-07-22
+
+### Features
+- *(projects)* Add titled sections to project pages (#47) by @gmocquet
+
 ## [0.4.1] - 2026-07-22
 
 ### Bug Fixes
