@@ -4,18 +4,20 @@ name: release-tag
 #
 #   job `changelog` — compute the next version from Conventional Commits (scripts/next-release-tag.sh;
 #     breaking → MAJOR, feat → MINOR, else PATCH), regenerate CHANGELOG.md for it (git-cliff, PR/author
-#     enriched via the API using GH_PAT_TOKEN), and commit it straight to main with the automatic
-#     GITHUB_TOKEN. GitHub does NOT start workflow runs from GITHUB_TOKEN pushes (anti-recursion), so
-#     this never re-triggers the workflow — no loop, no PR, no `[skip ci]`. Outputs the version and the
-#     commit SHA to tag. Stops (empty output) when nothing is pending.
+#     enriched via the API using GH_PAT_TOKEN), and commit it straight to main with the fine-grained
+#     PAT (GH_PAT_TOKEN): the `main` ruleset (PR-only) rejects GITHUB_TOKEN pushes, while the owner
+#     identity carried by the PAT is a bypass actor. The PAT push re-triggers this workflow; that
+#     follow-up run is a harmless no-op — the `release-tag` concurrency group serializes runs, and by
+#     the time it computes the next version the tag exists on this very commit, so nothing is pending.
+#     Outputs the version and the commit SHA to tag. Stops (empty output) when nothing is pending.
 #
 #   job `tag` — needs `changelog` and runs ONLY if it succeeded and produced a version. Creates and
-#     pushes the v* tag on that SHA with the fine-grained PAT (GH_PAT_TOKEN). A PAT push is a real
-#     identity, so it triggers deploy.yml (on: push tags v*). See ADR 0010.
+#     pushes the v* tag on that SHA with the same PAT. A PAT push is a real identity, so it triggers
+#     deploy.yml (on: push tags v*). See ADR 0010 (incl. the 2026-07-22 addendum).
 #
 # `persist-credentials: false` is required: otherwise actions/checkout leaves a GITHUB_TOKEN
-# http.extraheader that overrides the PAT in the tag-push URL (the tag would push as GITHUB_TOKEN and
-# never trigger deploy). Actions are SHA-pinned per repo policy.
+# http.extraheader that overrides the PAT in the push URLs (pushes would go out as GITHUB_TOKEN —
+# rejected on main, and a tag push that never triggers deploy). Actions are SHA-pinned per repo policy.
 
 on:
   push:
@@ -52,12 +54,11 @@ jobs:
         if: steps.ver.outputs.tag != ''
         run: pipx install git-cliff==2.13.1
 
-      - name: Update CHANGELOG.md and push it to main (GITHUB_TOKEN — no workflow re-trigger)
+      - name: Update CHANGELOG.md and push it to main (PAT — re-triggered run no-ops)
         id: cl
         if: steps.ver.outputs.tag != ''
         env:
-          GH_PAT_TOKEN: ${{ secrets.GH_PAT_TOKEN }} # git-cliff reads PR/author from the API (Pull requests: Read)
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # push identity that does not re-trigger this workflow
+          GH_PAT_TOKEN: ${{ secrets.GH_PAT_TOKEN }} # git-cliff API reads + push identity allowed through the main ruleset
         run: |
           make changelog TAG=${{ steps.ver.outputs.tag }}
           git config user.name  "github-actions[bot]"
@@ -67,7 +68,7 @@ jobs:
             echo "CHANGELOG.md unchanged — committing nothing."
           else
             git commit -m "chore(release): ${{ steps.ver.outputs.tag }}"
-            git push "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" HEAD:main
+            git push "https://x-access-token:${GH_PAT_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" HEAD:main
           fi
           echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
 

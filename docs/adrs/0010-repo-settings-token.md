@@ -65,3 +65,19 @@ bootstrap credential, used only inside Actions; the exception is deliberately na
 - **Rotation** (only when a bounded expiry is set): an expired PAT silently fails the tag push (red
   `release-tag` run). Re-run the `-set` target to rotate; `-status` reports presence.
 - The `repo-settings-token-*` tooling is reusable to provision any repo's CI PAT.
+
+## Addendum — the changelog commit is pushed with the PAT too (2026-07-22)
+
+Going public activated a server-side **`main` ruleset** (PR-only, 1 review + code owners,
+squash-only, linear history) with a repository-role **bypass for the owner**. The changelog job's
+`GITHUB_TOKEN` push to `main` is now rejected (`GH013: Changes must be made through a pull
+request`), which broke the whole chain (no changelog commit → no tag → no deploy). Adding the
+GitHub Actions app as a ruleset bypass actor is not possible on a **personal** repo (the API only
+accepts integrations owned by the ruleset source's organization).
+
+So `release-tag.yml` pushes the **changelog commit with `GH_PAT_TOKEN` as well** — the owner
+identity is a bypass actor and the push goes through. The original anti-recursion property
+(`GITHUB_TOKEN` pushes never re-trigger workflows) is replaced by two guards: the `release-tag`
+**concurrency group** serializes runs, and the re-triggered run computes the next version **after**
+the tag landed on that very changelog commit — nothing pending, clean no-op. The PAT scope is
+unchanged (`Contents: write` already covers branch pushes).

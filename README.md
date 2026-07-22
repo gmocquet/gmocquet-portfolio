@@ -111,10 +111,11 @@ directly over HTTPS while email is untouched. Three parts:
   the DS to expire — see the runbook). Mailboxes stay at OVH.
 - **Release-driven deploy** — `.github/workflows/deploy.yml` runs `make deploy` (build + `wrangler`
   Direct Upload) on every **`v*` release tag** (tags are created by `release-tag.yml` from
-  Conventional Commits). `release-tag.yml` pushes the tag with a **fine-grained PAT**
-  (`GH_PAT_TOKEN`, managed by `make repo-settings-token-*`) rather than the automatic
-  `GITHUB_TOKEN`, because GitHub does not trigger workflows from `GITHUB_TOKEN`-created events — see
-  ADR 0010. Deploy needs the `CLOUDFLARE_API_TOKEN` / `CLOUDFLARE_ACCOUNT_ID` secrets and the
+  Conventional Commits). `release-tag.yml` pushes both the changelog commit and the tag with a
+  **fine-grained PAT** (`GH_PAT_TOKEN`, managed by `make repo-settings-token-*`) rather than the
+  automatic `GITHUB_TOKEN`: a real-identity push passes the `main` ruleset (which rejects
+  `GITHUB_TOKEN` pushes) and triggers downstream workflows (GitHub does not trigger them from
+  `GITHUB_TOKEN`-created events) — see ADR 0010. Deploy needs the `CLOUDFLARE_API_TOKEN` / `CLOUDFLARE_ACCOUNT_ID` secrets and the
   optional `PUBLIC_CF_BEACON_TOKEN` variable (cookieless analytics beacon). `make deploy` also works
   locally (the secrets come from your generated `.env` — see **Secrets**).
 
@@ -169,9 +170,10 @@ those steps stay manual. See ADR 0010.
   only on public repos). Going public later enables native scanning + push protection on top — see
   ADR 0011 for the two-command runbook.
 - **Conventional Commits** drive the release pipeline: on push to `main`, `release-tag.yml`
-  regenerates **`CHANGELOG.md`** (git-cliff), commits it straight to `main` (via `GITHUB_TOKEN`, which
-  does not re-trigger workflows), then creates the **semver `v*` tag** — which triggers `deploy.yml`.
-  See `.github/workflows/`.
+  regenerates **`CHANGELOG.md`** (git-cliff), commits it straight to `main` with the fine-grained PAT
+  (the run this push re-triggers no-ops: the `release-tag` concurrency group serializes runs and the
+  fresh tag leaves nothing pending), then creates the **semver `v*` tag** — which triggers
+  `deploy.yml`. See `.github/workflows/` and ADR 0010.
 - Spec-driven: new capabilities start as an **OpenSpec** change proposal under `openspec/`.
 
 ## License
