@@ -1,6 +1,11 @@
 # Changelog
 
 All notable changes to this project are documented here.
+## [0.2.3] - 2026-07-22
+
+### Chore
+- *(deps)* Bump yaml and @astrojs/language-server in /frontend (#37) by @dependabot[bot]
+
 ## [0.2.2] - 2026-07-22
 
 ### Documentation
