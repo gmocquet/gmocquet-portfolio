@@ -12,10 +12,12 @@ notable moments at a glance.
   "H:MM:SS" timecode the embedded player starts at) and `timecodes` (notable moments grouped under
   optional headings, mirroring the experiences `highlights` group shape) — validated by Zod and
   mirrored in the `@gmocquet/ui` `MediaLink` contract.
-- **Capability `public-site`**: `toEmbedUrl` honors `start` (YouTube `?start=`, Vimeo `#t=`); new
-  `mediaUrlAt(media, tc)` helper links to a moment on the original platform; new content-agnostic
-  `MediaTimecodes` block renders the grouped moments below the embed, each timecode linking to the
-  video at that moment.
+- **Capability `public-site`**: `toEmbedUrl` honors `start` (YouTube `?start=`, Vimeo `#t=`; the
+  YouTube JS API is enabled when timecodes exist); new `mediaUrlAt(media, tc)` helper links to a
+  moment on the original platform; new content-agnostic `MediaTimecodes` island renders the grouped
+  moments below the embed — clicking a timecode seeks the embedded player to that moment and plays
+  (postMessage API, no navigation), while an external-link icon opens the moment on the platform in
+  a new tab.
 - Content: the Kpler ARTE video starts at 17:14 and lists one "Main interesting timecode" group and
   one "Interesting timecodes" group (5 moments).
 

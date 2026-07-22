@@ -18,8 +18,11 @@ contract.
 #### Scenario: Notable moments render below the embed
 
 - WHEN a media declares `timecodes` groups
-- THEN the detail page renders each group heading and its moments below the embed, each timecode
-  linking to the video at that moment on the original platform
+- THEN the detail page renders each group heading and its moments below the embed
+- AND clicking a timecode seeks the embedded player above to that moment and plays, without
+  leaving the page (Vimeo/YouTube postMessage API)
+- AND an external-link icon next to each timecode opens the video at that moment on the original
+  platform, in a new tab
 
 #### Scenario: Existing content is unaffected
 
