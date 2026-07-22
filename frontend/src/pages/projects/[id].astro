@@ -1,15 +1,8 @@
 ---
-import {
-  Badge,
-  MediaLinks,
-  MediaTimecodes,
-  PdfEmbed,
-  VideoEmbed,
-  partitionMedia,
-  toEmbedUrl,
-} from "@gmocquet/ui";
+import { Badge } from "@gmocquet/ui";
 import type { GetStaticPaths } from "astro";
 import { getCollection } from "astro:content";
+import ProjectMedia from "../../components/ProjectMedia.astro";
 import Base from "../../layouts/Base.astro";
 
 export const getStaticPaths = (async () => {
@@ -19,9 +12,6 @@ export const getStaticPaths = (async () => {
 
 const { project: p } = Astro.props;
 const meta = [p.company, p.period, p.role].filter(Boolean).join(" · ");
-
-// Embeddable media (videos, opted-in PDFs) render as inline sections; the rest stays plain links.
-const { sections, links } = partitionMedia(p.media);
 ---
 
 <Base title={`${p.title} — Guillaume Mocquet`} description={p.summary}>
@@ -53,38 +43,30 @@ const { sections, links } = partitionMedia(p.media);
       ) : null
     }
 
+    <ProjectMedia media={p.media} />
+
     {
-      sections.length > 0 ? (
-        <div class="mt-10 space-y-10">
-          {sections.map((m) => (
+      (p.sections ?? []).length > 0 ? (
+        <div class="mt-12 space-y-12">
+          {(p.sections ?? []).map((s, i) => (
             <section>
-              {m.description ? (
-                <p class="mb-4 leading-relaxed text-muted">
-                  {m.description}{" "}
-                  {m.fullVersion ? (
-                    <a
-                      href={m.fullVersion.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      class="text-accent underline-offset-4 transition-colors hover:underline"
-                    >
-                      {m.fullVersion.label}
-                    </a>
-                  ) : null}
-                </p>
+              <h2 class="font-display text-2xl text-fg">{`${i + 1}. ${s.title}`}</h2>
+              {s.body.map((paragraph) => (
+                <p class="mt-3 leading-relaxed text-muted">{paragraph}</p>
+              ))}
+              {s.image ? (
+                <img
+                  src={s.image.src}
+                  alt={s.image.alt}
+                  loading="lazy"
+                  class="mt-6 w-full rounded-lg border border-border"
+                />
               ) : null}
-              {toEmbedUrl(m) !== null ? (
-                <VideoEmbed media={m} />
-              ) : (
-                <PdfEmbed client:only="react" media={m} />
-              )}
-              <MediaTimecodes client:visible media={m} />
+              <ProjectMedia media={s.media} />
             </section>
           ))}
         </div>
       ) : null
     }
-
-    {links.length > 0 ? <div class="mt-8"><MediaLinks media={links} /></div> : null}
   </article>
 </Base>

@@ -52,4 +52,11 @@ export interface ProjectData {
   outcomes: string[];
   stack: string[];
   media: MediaLink[];
+  /** Titled page sections (auto-numbered from array order); everything but the title is optional. */
+  sections?: {
+    title: string;
+    body: string[];
+    image?: { src: string; alt: string };
+    media: MediaLink[];
+  }[];
 }

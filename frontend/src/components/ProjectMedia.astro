@@ -1,0 +1,52 @@
+---
+import {
+  type MediaLink,
+  MediaLinks,
+  MediaTimecodes,
+  PdfEmbed,
+  VideoEmbed,
+  partitionMedia,
+  toEmbedUrl,
+} from "@gmocquet/ui";
+
+interface Props {
+  media: MediaLink[];
+}
+
+const { media } = Astro.props;
+// Embeddable media (videos, opted-in PDFs) render as inline blocks; the rest stays plain links.
+const { sections: embeds, links } = partitionMedia(media);
+---
+
+{
+  embeds.length > 0 ? (
+    <div class="mt-6 space-y-10">
+      {embeds.map((m) => (
+        <section>
+          {m.description ? (
+            <p class="mb-4 leading-relaxed text-muted">
+              {m.description}{" "}
+              {m.fullVersion ? (
+                <a
+                  href={m.fullVersion.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="text-accent underline-offset-4 transition-colors hover:underline"
+                >
+                  {m.fullVersion.label}
+                </a>
+              ) : null}
+            </p>
+          ) : null}
+          {toEmbedUrl(m) !== null ? (
+            <VideoEmbed media={m} />
+          ) : (
+            <PdfEmbed client:only="react" media={m} />
+          )}
+          <MediaTimecodes client:visible media={m} />
+        </section>
+      ))}
+    </div>
+  ) : null
+}
+{links.length > 0 ? <div class="mt-6"><MediaLinks media={links} /></div> : null}
