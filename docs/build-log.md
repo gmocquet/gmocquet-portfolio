@@ -272,3 +272,12 @@ A visual pass on the M3 site produced four refinements, delivered as focused PRs
   aerial photo (local asset) and the ARTE documentary with its timecodes.
 - The detail page's media rendering was extracted into a reusable `ProjectMedia.astro`, shared by
   project-level media and per-section media — no rendering logic duplicated.
+
+## 2026-07-22 — Kpler page: source credits, ARTE context, plain section titles
+
+- Media gain an optional `source` (canonical page) rendered as an external-link icon after the
+  video caption (ARTE page for the documentary); sections gain a `source` too, rendered as
+  "Source: <host>" with the shared external icon after the body/illustration (Kpler product page).
+- The ARTE documentary now has a description bridging the Kpler platform work, the Cushing product
+  presentation above and the film (Marije Meerman, 2022) — rendered between the image and the
+  player. Section headings dropped their automatic numbering (plain titles).
