@@ -20,6 +20,10 @@ export interface MediaLink {
   embed?: boolean;
   /** Link to the complete document when the embedded one is only an excerpt. */
   fullVersion?: { label: string; url: string };
+  /** Start the embedded video at this timecode ("MM:SS" or "H:MM:SS"). */
+  start?: string;
+  /** Notable moments listed below the embed, grouped under optional headings. */
+  timecodes?: { group?: string; items: { at: string; label: string }[] }[];
 }
 
 export interface HighlightGroup {

@@ -1,5 +1,26 @@
 import type { MediaLink } from "../types";
 
+/** Convert a "MM:SS" / "H:MM:SS" timecode to seconds. */
+export function timecodeToSeconds(tc: string): number {
+  return tc.split(":").reduce((total, part) => total * 60 + Number(part), 0);
+}
+
+/** Link to the media at a given timecode (YouTube `t=`, Vimeo `#t=`); plain URL otherwise. */
+export function mediaUrlAt(media: MediaLink, tc: string): string {
+  const seconds = timecodeToSeconds(tc);
+  if (media.kind === "youtube") {
+    try {
+      const url = new URL(media.url);
+      url.searchParams.set("t", `${seconds}s`);
+      return url.toString();
+    } catch {
+      return media.url;
+    }
+  }
+  if (media.kind === "vimeo") return `${media.url}#t=${seconds}s`;
+  return media.url;
+}
+
 /** Extract a YouTube video id from watch / share / embed URLs. */
 function youTubeId(url: URL): string | null {
   if (url.hostname === "youtu.be") return url.pathname.slice(1) || null;
@@ -28,12 +49,16 @@ export function toEmbedUrl(media: MediaLink): string | null {
   } catch {
     return null;
   }
+  const start = media.start ? timecodeToSeconds(media.start) : null;
   if (media.kind === "youtube") {
     const id = youTubeId(url);
-    return id ? `https://www.youtube-nocookie.com/embed/${id}` : null;
+    if (!id) return null;
+    return `https://www.youtube-nocookie.com/embed/${id}${start ? `?start=${start}` : ""}`;
   }
   if (media.kind === "vimeo") {
-    return vimeoEmbed(url);
+    const embed = vimeoEmbed(url);
+    if (!embed) return null;
+    return start ? `${embed}#t=${start}s` : embed;
   }
   return null;
 }
