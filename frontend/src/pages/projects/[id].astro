@@ -1,5 +1,13 @@
 ---
-import { Badge, MediaLinks, PdfEmbed, VideoEmbed, partitionMedia, toEmbedUrl } from "@gmocquet/ui";
+import {
+  Badge,
+  MediaLinks,
+  MediaTimecodes,
+  PdfEmbed,
+  VideoEmbed,
+  partitionMedia,
+  toEmbedUrl,
+} from "@gmocquet/ui";
 import type { GetStaticPaths } from "astro";
 import { getCollection } from "astro:content";
 import Base from "../../layouts/Base.astro";
@@ -70,6 +78,7 @@ const { sections, links } = partitionMedia(p.media);
               ) : (
                 <PdfEmbed client:only="react" media={m} />
               )}
+              <MediaTimecodes media={m} />
             </section>
           ))}
         </div>

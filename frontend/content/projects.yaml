@@ -19,6 +19,24 @@
     - label: "ARTE — Planète finance: la course aux matières premières (2022)"
       url: https://vimeo.com/930397924
       kind: vimeo
+      start: "17:14"
+      timecodes:
+        - group: Main interesting timecode
+          items:
+            - at: "17:10"
+              label: EIA & drone data analyses
+        - group: Interesting timecodes
+          items:
+            - at: "09:45"
+              label: Presentation of Cushing (Oklahoma, USA) and crude oil relationship with trading
+            - at: "12:20"
+              label: Presentation of the drone pilot
+            - at: "14:20"
+              label: Tank images, data & customers
+            - at: "17:10"
+              label: EIA & drone data analyses
+            - at: "29:35"
+              label: Drone pilot feeling for the 20th April 2020 crude oil trading day
   featured: true
 
 - id: quantmetry-mlops-white-paper

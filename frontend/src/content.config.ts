@@ -8,6 +8,11 @@ const mediaUrl = z.string().refine((s) => /^(https?:\/\/|\/)/.test(s), {
   message: "must be an http(s) URL or a root-relative path",
 });
 
+// A "MM:SS" / "H:MM:SS" video timecode.
+const timecode = z.string().regex(/^(\d{1,2}:)?[0-5]?\d:[0-5]\d$/, {
+  message: 'must be a "MM:SS" or "H:MM:SS" timecode',
+});
+
 // A media/reference link attached to an experience or a project.
 const mediaLink = z.object({
   label: z.string(),
@@ -21,6 +26,17 @@ const mediaLink = z.object({
   embed: z.boolean().default(false),
   // Link to the complete document when the embedded one is only an excerpt.
   fullVersion: z.object({ label: z.string(), url: mediaUrl }).optional(),
+  // Start the embedded video at this timecode.
+  start: timecode.optional(),
+  // Notable moments listed below the embed, grouped under optional headings.
+  timecodes: z
+    .array(
+      z.object({
+        group: z.string().optional(),
+        items: z.array(z.object({ at: timecode, label: z.string() })),
+      }),
+    )
+    .default([]),
 });
 
 // Singleton "about me" data (one file: content/profile/profile.yaml).
