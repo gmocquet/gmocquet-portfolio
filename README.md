@@ -179,4 +179,5 @@ those steps stay manual. See ADR 0010.
 
 ## License
 
-Private project (not yet public). © Guillaume Mocquet.
+The repository is public for reading and reference (transparency of the build); no license is
+granted — all rights reserved. © Guillaume Mocquet.
