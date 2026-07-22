@@ -1,6 +1,11 @@
 # Changelog
 
 All notable changes to this project are documented here.
+## [0.2.4] - 2026-07-22
+
+### Chore
+- *(deps)* Bump astro from 6.4.8 to 7.1.0 in /frontend (#38) by @dependabot[bot]
+
 ## [0.2.3] - 2026-07-22
 
 ### Chore
