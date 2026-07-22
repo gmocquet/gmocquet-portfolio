@@ -1,6 +1,11 @@
 # Changelog
 
 All notable changes to this project are documented here.
+## [0.4.1] - 2026-07-22
+
+### Bug Fixes
+- *(content)* Align the EIA timecode with the video start (17:14) (#46) by @gmocquet
+
 ## [0.4.0] - 2026-07-22
 
 ### Features
