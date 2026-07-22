@@ -7,7 +7,8 @@ const year = new Date().getFullYear();
 
 const links: { href: string; label: string; ext?: boolean }[] = [];
 if (c.linkedin) links.push({ href: c.linkedin, label: "LinkedIn", ext: true });
-if (c.github) links.push({ href: c.github, label: "GitHub", ext: true });
+// The footer GitHub link points to this site's source repository, not the personal profile.
+if (profile.repository) links.push({ href: profile.repository, label: "GitHub", ext: true });
 ---
 
 <footer class="mt-24 border-t border-border">
