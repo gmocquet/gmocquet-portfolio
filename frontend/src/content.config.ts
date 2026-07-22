@@ -54,6 +54,8 @@ const profile = defineCollection({
       linkedin: z.string().url().optional(),
       github: z.string().url().optional(),
     }),
+    // Public source repository of this site (GitHub links in the header and footer).
+    repository: z.string().url().optional(),
     topSkills: z.array(z.string()).default([]),
     skills: z.array(z.object({ category: z.string(), items: z.array(z.string()) })).default([]),
     languages: z.array(z.object({ name: z.string(), level: z.string() })).default([]),
