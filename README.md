@@ -161,8 +161,9 @@ those steps stay manual. See ADR 0010.
 ## Governance
 
 - **Every change goes through a Pull Request**; direct pushes to `main` are blocked by a local
-  `pre-push` hook (`make init`). Server-side enforcement (ruleset) is enabled once the repo is public
-  or on GitHub Pro — `make gh-bootstrap` provisions it automatically when available.
+  `pre-push` hook (`make init`) and, since the repo went public, by the server-side **`main`
+  ruleset** (PR-only, 1 review + code owners, squash-only, linear history) — created or converged by
+  `make gh-bootstrap`, whose JSON is the canonical definition (no ClickOps drift).
 - **Secret scanning (defense-in-depth)** — `gitleaks` runs on **staged changes** in the pre-commit
   hook and over the **full history** in CI (`.github/workflows/security.yml`, `make secret-scan`), so
   a leak is caught before it lands even while the repo is private (GitHub's native scanning is free

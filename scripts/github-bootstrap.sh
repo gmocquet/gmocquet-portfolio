@@ -52,23 +52,38 @@ else
 fi
 
 echo "==> branch ruleset on main (PR-only) — requires a public repo or GitHub Pro for private repos"
-existing_rs=$(gh api "repos/$REPO/rulesets" -q '.[].name' 2>/dev/null || true)
-if grep -Fxq "main-protection" <<<"$existing_rs"; then
-  echo "   exists:  main-protection"
-elif gh api -X POST "repos/$REPO/rulesets" --input - >/dev/null 2>&1 <<'JSON'
+# Canonical governance for main (create or converge — the live ruleset must match this file):
+# PR-only (1 review, code owners, resolved threads, squash-only), no deletion, linear history,
+# no force-push. Bypass: repo write role (owner) — needed by release-tag's PAT pushes (ADR 0010);
+# the GitHub Actions app cannot be a bypass actor on a personal repo (organizations only).
+ruleset_json() {
+  cat <<'JSON'
 {
-  "name": "main-protection",
+  "name": "main",
   "target": "branch",
   "enforcement": "active",
   "conditions": { "ref_name": { "include": ["~DEFAULT_BRANCH"], "exclude": [] } },
+  "bypass_actors": [
+    { "actor_id": 2, "actor_type": "RepositoryRole", "bypass_mode": "always" }
+  ],
   "rules": [
-    { "type": "pull_request", "parameters": { "required_approving_review_count": 0, "dismiss_stale_reviews_on_push": false, "require_code_owner_review": false, "require_last_push_approval": false, "required_review_thread_resolution": false } },
+    { "type": "pull_request", "parameters": { "required_approving_review_count": 1, "dismiss_stale_reviews_on_push": false, "required_reviewers": [], "require_code_owner_review": true, "require_last_push_approval": false, "required_review_thread_resolution": true, "allowed_merge_methods": ["squash"] } },
+    { "type": "deletion" },
+    { "type": "required_linear_history" },
     { "type": "non_fast_forward" }
   ]
 }
 JSON
-then
-  echo "   created: main-protection ruleset"
+}
+rs_id=$(gh api "repos/$REPO/rulesets" -q '.[] | select(.name == "main") | .id' 2>/dev/null | head -1)
+if [ -n "$rs_id" ]; then
+  if ruleset_json | gh api -X PUT "repos/$REPO/rulesets/$rs_id" --input - >/dev/null 2>&1; then
+    echo "   converged: main ruleset (id $rs_id)"
+  else
+    echo "   ERROR: failed to converge main ruleset (id $rs_id)"
+  fi
+elif ruleset_json | gh api -X POST "repos/$REPO/rulesets" --input - >/dev/null 2>&1; then
+  echo "   created: main ruleset"
 else
   echo "   skipped: server-side protection unavailable on a private free-plan repo."
   echo "            'make init' installs a local pre-push hook enforcing PR-only meanwhile;"
