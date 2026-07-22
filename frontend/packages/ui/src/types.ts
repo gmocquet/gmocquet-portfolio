@@ -20,6 +20,8 @@ export interface MediaLink {
   embed?: boolean;
   /** Link to the complete document when the embedded one is only an excerpt. */
   fullVersion?: { label: string; url: string };
+  /** Canonical source page of the media (e.g. broadcaster page), linked from the embed caption. */
+  source?: string;
   /** Start the embedded video at this timecode ("MM:SS" or "H:MM:SS"). */
   start?: string;
   /** Notable moments listed below the embed, grouped under optional headings. */
@@ -52,11 +54,13 @@ export interface ProjectData {
   outcomes: string[];
   stack: string[];
   media: MediaLink[];
-  /** Titled page sections (auto-numbered from array order); everything but the title is optional. */
+  /** Titled page sections, rendered in array order; everything but the title is optional. */
   sections?: {
     title: string;
     body: string[];
     image?: { src: string; alt: string };
+    /** Canonical source of the section content, linked right after the body/illustration. */
+    source?: string;
     media: MediaLink[];
   }[];
 }

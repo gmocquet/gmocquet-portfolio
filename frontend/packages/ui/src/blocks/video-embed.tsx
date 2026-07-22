@@ -1,3 +1,4 @@
+import { ArrowUpRight } from "lucide-react";
 import { toEmbedUrl } from "../lib/video";
 import type { MediaLink } from "../types";
 
@@ -23,6 +24,17 @@ export function VideoEmbed({ media }: { media: MediaLink }) {
       </div>
       <figcaption className="border-t border-border px-4 py-2 text-sm text-muted">
         {media.label}
+        {media.source ? (
+          <a
+            href={media.source}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Open the source in a new tab"
+            className="ml-1.5 inline-block align-text-bottom transition-colors hover:text-accent"
+          >
+            <ArrowUpRight className="size-3.5" aria-hidden />
+          </a>
+        ) : null}
       </figcaption>
     </figure>
   );
