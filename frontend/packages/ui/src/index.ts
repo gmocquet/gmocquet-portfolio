@@ -2,12 +2,14 @@
 
 export { ExperienceItem } from "./blocks/experience-item";
 export { MediaLinks } from "./blocks/media-links";
+export { PdfEmbed } from "./blocks/pdf-embed";
 export { ProjectCard } from "./blocks/project-card";
 export { mediaIcons } from "./blocks/registry";
 export { SkillGroup } from "./blocks/skill-group";
 export { Stat } from "./blocks/stat";
 export { TagMatcher, type TagMatcherProps } from "./blocks/tag-matcher";
 export { VideoEmbed } from "./blocks/video-embed";
+export { partitionMedia } from "./lib/media";
 export { buildTagGroups, type MatchEntry, type TagGroup } from "./lib/tags";
 export { cn } from "./lib/utils";
 export { toEmbedUrl } from "./lib/video";

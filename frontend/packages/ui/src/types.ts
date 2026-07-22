@@ -14,6 +14,12 @@ export interface MediaLink {
   label: string;
   url: string;
   kind: MediaKind;
+  /** Intro paragraph rendered above the media when it is embedded inline. */
+  description?: string;
+  /** Opt a `pdf` media into inline embedding (videos embed automatically by kind). */
+  embed?: boolean;
+  /** Link to the complete document when the embedded one is only an excerpt. */
+  fullVersion?: { label: string; url: string };
 }
 
 export interface HighlightGroup {

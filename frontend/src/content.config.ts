@@ -3,16 +3,24 @@ import { z } from "astro:schema";
 import { glob } from "astro/loaders";
 import { orderedYaml } from "./loaders/ordered-yaml";
 
+// Either an absolute http(s) URL or a root-relative path (e.g. a PDF under public/assets).
+const mediaUrl = z.string().refine((s) => /^(https?:\/\/|\/)/.test(s), {
+  message: "must be an http(s) URL or a root-relative path",
+});
+
 // A media/reference link attached to an experience or a project.
 const mediaLink = z.object({
   label: z.string(),
-  // Either an absolute http(s) URL or a root-relative path (e.g. a PDF under public/assets).
-  url: z.string().refine((s) => /^(https?:\/\/|\/)/.test(s), {
-    message: "must be an http(s) URL or a root-relative path",
-  }),
+  url: mediaUrl,
   kind: z
     .enum(["youtube", "vimeo", "slideshare", "pdf", "article", "repo", "external"])
     .default("external"),
+  // Intro paragraph rendered above the media when it is embedded inline on a detail page.
+  description: z.string().optional(),
+  // Opt a `pdf` media into inline embedding (videos embed automatically by kind).
+  embed: z.boolean().default(false),
+  // Link to the complete document when the embedded one is only an excerpt.
+  fullVersion: z.object({ label: z.string(), url: mediaUrl }).optional(),
 });
 
 // Singleton "about me" data (one file: content/profile/profile.yaml).
