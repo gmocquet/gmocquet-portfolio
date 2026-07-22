@@ -263,3 +263,12 @@ A visual pass on the M3 site produced four refinements, delivered as focused PRs
 - Content stays data: `media` gains optional `start` and `timecodes` (grouped like the experiences
   `highlights`); `toEmbedUrl` honors `start` (YouTube `?start=`, Vimeo `#t=`), and the new
   content-agnostic `MediaTimecodes` block renders the groups. Helpers unit-tested.
+
+## 2026-07-22 — Kpler page: titled sections (add-project-sections)
+
+- Projects gain an optional `sections` list (auto-numbered titles, body paragraphs, optional
+  illustration, optional media). The Kpler page now tells three product stories: Product Estimation
+  and Destination Forecast as placeholders, and Cushing drone inventories carrying the pitch, the
+  aerial photo (local asset) and the ARTE documentary with its timecodes.
+- The detail page's media rendering was extracted into a reusable `ProjectMedia.astro`, shared by
+  project-level media and per-section media — no rendering logic duplicated.
