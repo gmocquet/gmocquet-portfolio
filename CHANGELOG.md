@@ -1,6 +1,11 @@
 # Changelog
 
 All notable changes to this project are documented here.
+## [0.6.0] - 2026-07-22
+
+### Features
+- *(projects)* Credit sources and add ARTE context on the Kpler page (#48) by @gmocquet
+
 ## [0.5.0] - 2026-07-22
 
 ### Features
