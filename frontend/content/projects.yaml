@@ -27,17 +27,31 @@
   period: "2019"
   role: Data & Solution Architect
   summary: >-
-    Authored chapter 3 of Quantmetry's 5th white paper, "AI in production: life cycle & model drift",
-    covering MLOps (re)training automation across code, architecture and delivery — with a 20-minute
-    companion talk.
+    Authored chapter 3 of Quantmetry's 5th white paper, "AI in production: life cycle & model
+    drift" — "Scheduled updates & (re)training management" — covering MLOps (re)training automation
+    across code, architecture and delivery, with a 20-minute companion talk.
   outcomes:
     - Published reference on operationalizing ML — model life cycle, drift detection and automated retraining.
     - Framed the architecture and delivery patterns that turn a model into a maintainable production system.
   stack: [MLOps, Model drift, CI/CD, Cloud architecture]
   media:
-    - label: "White paper — AI in production: life cycle & model drift (PDF)"
+    - label: "Chapter 3 — Scheduled updates & (re)training management (PDF, in French)"
       url: /assets/gmocquet-quantmetry-2019-white-paper-mlops-ai-in-production-model-lifecycle-and-drift-scheduled-updates-and-retraining-management.pdf
       kind: pdf
+      embed: true
+      description: >-
+        The chapter below — "Évolutions programmées et gestion du retrain" (in French) — covers how
+        to keep a model reliable once in production: scheduling updates, detecting model drift, and
+        automating (re)training across code, architecture and delivery.
+      fullVersion:
+        label: "Read the full white paper (PDF, 14 MB)."
+        url: /assets/gmocquet-quantmetry-2019-white-paper-mlops-ai-in-production-model-lifecycle-and-drift-scheduled-updates-and-retraining-management-full.pdf
+    - label: "Talk — Scheduled updates & (re)training management (20 min, in French)"
+      url: https://www.youtube.com/watch?v=rM-VveBJY80
+      kind: youtube
+      description: >-
+        The companion talk: a 20-minute walkthrough of the chapter — model life cycle in production,
+        drift detection and automated (re)training — and the patterns that make it work in practice.
   featured: true
 
 - id: rue-du-commerce-product-pages
